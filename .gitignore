@@ -1,0 +1,5 @@
+*.o
+atecc
+.*.swp
+*.txt
+*.bin
