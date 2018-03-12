@@ -1,7 +1,7 @@
 CC:=$(CROSS_COMPILE)gcc
 
 CFLAGS=-I$(abspath ../cryptoauthlib/lib) -I$(abspath ../helpers) -std=gnu99
-LDFLAGS=-L$(abspath ../.$(CROSS_COMPILE)build) -lcryptoauth
+LDFLAGS=-L$(abspath ../.$(CROSS_COMPILE)build) -l:libcryptoauth.a
 
 TARGET=atecc
 OBJS=atecc.o \
@@ -14,7 +14,7 @@ OBJS=atecc.o \
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) -o $@ $^
