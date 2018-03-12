@@ -16,6 +16,10 @@
 #include "atecc-config.h"
 #include "atecc-hmac.h"
 
+#ifndef VERSION
+#define VERSION "(unknown version)"
+#endif
+
 struct atecc_cmd {
     const char *name;
     int (*callback)(int, char**);
@@ -41,6 +45,11 @@ void print_available_cmds(void)
     }
 }
 
+void print_version(void)
+{
+    eprintf("atecc-util " VERSION ", build " __DATE__ " " __TIME__ "\n");
+}
+
 void print_help(const char *argv0, const char *cmd_name)
 {
     if (cmd_name != NULL) {
@@ -55,12 +64,14 @@ void print_help(const char *argv0, const char *cmd_name)
         eprintf("Unknown command: %s\nAvailable commands:\n", cmd_name);
         print_available_cmds();
     } else {
-        eprintf("Usage: %s [-hbs] -c \"cmd1 cmd1_args\" [-c \"cmd2 cmd2_args\"]\n\n", argv0);
+        print_version();
+        eprintf("Usage: %s [-bshv] -c \"cmd1 cmd1_args\" [-c \"cmd2 cmd2_args\"]\n\n", argv0);
 
         eprintf("\t-b <i2c bus ID>\n\t\tI2C bus ID ATECC is connected to. Default is %d\n", DEFAULT_I2C_BUS);
         eprintf("\t-s <i2c slave ID>\n\t\tI2C slave ID of ATECC. Default is 0x%x\n", DEFAULT_I2C_SLAVE);
         eprintf("\t-c \"cmd [arg1 [arg2 ...]]\"\n\t\tCommand and its arguments.\n");
-        eprintf("\t-h[cmd_name]\n\t\tPrint this help message or help message of specific command.\n\n");
+        eprintf("\t-h[cmd_name]\n\t\tPrint this help message or help message of specific command.\n");
+        eprintf("\t-v\tPrint version and exit\n\n");
 
         eprintf("Available commands:\n");
         print_available_cmds();
@@ -79,8 +90,12 @@ int main(int argc, char *argv[])
     cfg.atcai2c.bus = DEFAULT_I2C_BUS;
     cfg.atcai2c.slave_address = DEFAULT_I2C_SLAVE;
 
-    while ((c = getopt(argc, argv, "h::c:b:s:")) != -1) {
+    while ((c = getopt(argc, argv, "h::c:b:s:v")) != -1) {
         switch (c) {
+        case 'v':
+            print_version();
+            return 0;
+            break;
         case 'h':
             print_help(argv0, optarg);
             return 0;

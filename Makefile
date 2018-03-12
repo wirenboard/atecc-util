@@ -17,6 +17,10 @@ OBJS=atecc.o \
 	 helpers.o \
 	 ../helpers/atecc_config_zone.o
 
+# add version info from Git
+GIT_VERSION:=$(shell git describe --abbrev=6 --dirty --always --tags)
+CFLAGS+=-DVERSION=\"$(GIT_VERSION)\"
+
 all: $(TARGET)
 
 
