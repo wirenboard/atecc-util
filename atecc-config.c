@@ -55,7 +55,7 @@ int do_atecc_dump_config(int argc, char **argv)
 {
     int ret = 0;
 
-    if (argc < 1) {
+    if (argc < 2) {
         atecc_dump_config_help(argv[0]);
         return 1;
     }
@@ -99,7 +99,7 @@ int do_atecc_read_config(int argc, char **argv)
 {
     int ret = 0;
 
-    if (argc < 1) {
+    if (argc < 2) {
         atecc_read_config_help(argv[0]);
         return 1;
     }
@@ -148,7 +148,7 @@ int do_atecc_write_config(int argc, char **argv)
 {
     int ret = 0;
 
-    if (argc < 0) {
+    if (argc < 2) {
         atecc_write_config_help(argv[0]);
         return 1;
     }
