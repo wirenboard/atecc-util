@@ -4,7 +4,12 @@ CFLAGS=-I$(abspath ../cryptoauthlib/lib) -I$(abspath ../helpers) -std=gnu99
 LDFLAGS=-L$(abspath ../.$(CROSS_COMPILE)build) -lcryptoauth
 
 TARGET=atecc
-OBJS=atecc.o atecc-init.o atecc-config.o helpers.o ../helpers/atecc_config_zone.o
+OBJS=atecc.o \
+	 atecc-init.o \
+	 atecc-config.o \
+	 atecc-hmac.o \
+	 helpers.o \
+	 ../helpers/atecc_config_zone.o
 
 all: $(TARGET)
 

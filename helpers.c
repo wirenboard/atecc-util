@@ -5,6 +5,7 @@
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <wordexp.h>
 
 FILE *maybe_fopen(const char *filename, const char *mode)
 {

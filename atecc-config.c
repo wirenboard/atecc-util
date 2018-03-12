@@ -51,10 +51,16 @@ void dump_config(uint8_t config_zone[ATCA_ECC_CONFIG_SIZE])
     }
 }
 
-int do_atecc_dump_config(const char *args)
+int do_atecc_dump_config(int argc, char **argv)
 {
     int ret = 0;
-    const char *filename = args;
+
+    if (argc < 1) {
+        atecc_dump_config_help(argv[0]);
+        return 1;
+    }
+
+    const char *filename = argv[1];
     if (strlen(filename) == 0) {
         filename = "-";
     }
@@ -89,10 +95,16 @@ void atecc_read_config_help(const char *cmdname)
     eprintf("Usage: %s output.bin|-\n", cmdname);
 }
 
-int do_atecc_read_config(const char *args)
+int do_atecc_read_config(int argc, char **argv)
 {
     int ret = 0;
-    const char *filename = args;
+
+    if (argc < 1) {
+        atecc_read_config_help(argv[0]);
+        return 1;
+    }
+
+    const char *filename = argv[1];
     if (strlen(filename) == 0) {
         filename = "-";
     }
@@ -132,10 +144,16 @@ void atecc_write_config_help(const char *cmdname)
     eprintf("Usage: %s input.bin|-\n", cmdname);
 }
 
-int do_atecc_write_config(const char *args)
+int do_atecc_write_config(int argc, char **argv)
 {
     int ret = 0;
-    const char *filename = args;
+
+    if (argc < 0) {
+        atecc_write_config_help(argv[0]);
+        return 1;
+    }
+
+    const char *filename = argv[1];
     if (strlen(filename) == 0) {
         filename = "-";
     }
@@ -204,9 +222,10 @@ void atecc_lock_config_help(const char *cmdname)
     eprintf("Usage: %s\n", cmdname);
 }
 
-int do_atecc_lock_config(const char *args)
+int do_atecc_lock_config(int argc, char **argv)
 {
-    (void) args;
+    (void) argc;
+    (void) argv;
 
     ATCA_STATUS status;
     status = atcab_lock_config_zone();

@@ -5,6 +5,8 @@
 
 #define eprintf(...) fprintf(stderr, __VA_ARGS__)
 
+#define min(a, b) ((a) > (b) ? (b) : (a))
+
 FILE *maybe_fopen(const char *filename, const char *mode);
 void maybe_fclose(FILE *file);
 

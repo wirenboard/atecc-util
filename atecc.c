@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <assert.h>
+#include <wordexp.h>
 
 #include "basic/atca_basic.h"
 #include "atecc_config_zone.h"
@@ -13,10 +14,11 @@
 
 #include "atecc-init.h"
 #include "atecc-config.h"
+#include "atecc-hmac.h"
 
 struct atecc_cmd {
     const char *name;
-    int (*callback)(const char *);
+    int (*callback)(int, char**);
     void (*help)(const char *);
 };
 
@@ -25,6 +27,8 @@ struct atecc_cmd commands[] = {
     {"read-config", do_atecc_read_config, atecc_read_config_help},
     {"dump-config", do_atecc_dump_config, atecc_dump_config_help},
     {"lock-config", do_atecc_lock_config, atecc_lock_config_help},
+    {"hmac-write-key", do_atecc_hmac_write_key, atecc_hmac_write_key_help},
+    {"hmac-dgst", do_atecc_hmac_dgst, atecc_hmac_dgst_help},
     { NULL, NULL, NULL }
 };
 
@@ -54,7 +58,7 @@ void print_help(const char *argv0, const char *cmd_name)
         eprintf("Usage: %s [-hbs] -c \"cmd1 cmd1_args\" [-c \"cmd2 cmd2_args\"]\n\n", argv0);
 
         eprintf("\t-b <i2c bus ID>\n\t\tI2C bus ID ATECC is connected to. Default is %d\n", DEFAULT_I2C_BUS);
-        eprintf("\t-s <i2c slave ID>\n\t\tI2C slave ID of ATECC. Default is %d\n", DEFAULT_I2C_SLAVE);
+        eprintf("\t-s <i2c slave ID>\n\t\tI2C slave ID of ATECC. Default is 0x%x\n", DEFAULT_I2C_SLAVE);
         eprintf("\t-c \"cmd [arg1 [arg2 ...]]\"\n\t\tCommand and its arguments.\n");
         eprintf("\t-h[cmd_name]\n\t\tPrint this help message or help message of specific command.\n\n");
 
@@ -109,21 +113,18 @@ int main(int argc, char *argv[])
     }
 
     for (i = 0; i < num_cmds; i++) {
-        char *cmdname, *cmdargs;
-        struct atecc_cmd *cmdlist = commands;
+        wordexp_t p;
 
-        cmdname = cmds[i];
-        cmdargs = strchr(cmdname, ' ');
-
-        if (cmdargs != NULL) {
-            *cmdargs++ = '\0';
-        } else {
-            cmdargs = "";
+        if (wordexp(cmds[i], &p, 0)) {
+            eprintf("cmd '%s': commandline parse error\n", cmds[i]);
+            ret = 1;
+            goto _exit;
         }
 
+        struct atecc_cmd *cmdlist = commands;
         while (cmdlist->name != NULL) {
-            if (strcmp(cmdlist->name, cmdname) == 0) {
-                ret = cmdlist->callback(cmdargs);
+            if (strcmp(cmdlist->name, p.we_wordv[0]) == 0) {
+                ret = cmdlist->callback(p.we_wordc, p.we_wordv);
                 if (ret != 0) {
                     goto _exit;
                 }
@@ -131,6 +132,8 @@ int main(int argc, char *argv[])
             }
             cmdlist++;
         }
+
+        wordfree(&p);
     }
 
 _exit:
