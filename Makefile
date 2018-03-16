@@ -16,7 +16,15 @@ OBJS=atecc.o \
 	 atecc-hmac.o \
 	 atecc-asymm.o \
 	 helpers.o \
+	 util.o \
 	 ../helpers/atecc_config_zone.o
+
+ifdef USE_OPENSSL
+CFLAGS+=-DUSE_OPENSSL_SHA256=1 -DUSE_OPENSSL=1
+LDFLAGS+=-lcrypto
+else
+CFLAGS+=-DUSE_ATECC_SHA256=1
+endif
 
 # add version info from Git
 GIT_VERSION:=$(shell git describe --abbrev=6 --dirty --always --tags)
