@@ -15,6 +15,7 @@
 #include "atecc-init.h"
 #include "atecc-config.h"
 #include "atecc-hmac.h"
+#include "atecc-asymm.h"
 
 #ifndef VERSION
 #define VERSION "(unknown version)"
@@ -33,6 +34,10 @@ struct atecc_cmd commands[] = {
     {"lock-config", do_atecc_lock_config, atecc_lock_config_help},
     {"hmac-write-key", do_atecc_hmac_write_key, atecc_hmac_write_key_help},
     {"hmac-dgst", do_atecc_hmac_dgst, atecc_hmac_dgst_help},
+    {"ecc-gen", do_atecc_gen_private, atecc_gen_private_help},
+    {"ecc-write-priv", do_atecc_write_private, atecc_write_private_help},
+    {"ecc-read-pub", do_atecc_read_pub, atecc_read_pub_help},
+    {"ecc-gen-pub", do_atecc_gen_pub, atecc_gen_pub_help},
     { NULL, NULL, NULL }
 };
 
