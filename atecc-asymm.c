@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "helpers.h"
+#include "util.h"
 
 #include "basic/atca_basic.h"
 
@@ -154,3 +155,53 @@ void atecc_gen_pub_help(const char *cmdname)
     eprintf("Output format: 32 bytes of X and Y, big-endian\n");
 }
 
+int do_atecc_sign(int argc, char **argv)
+{
+    if (argc < 4) {
+        atecc_sign_help(argv[0]);
+        return 1;
+    }
+
+    int slot_id = atoi(argv[1]);
+    const char *messagefilename = argv[2];
+    const char *signaturefilename = argv[3];
+    ATCA_STATUS status;
+
+    FILE *signaturefile = NULL;
+    uint8_t signature[ATCA_SIG_SIZE];
+    uint8_t digest[ATCA_SHA2_256_DIGEST_SIZE];
+
+    if (sha256_file(messagefilename, digest)) {
+        return 1;
+    }
+
+    status = atcab_sign(slot_id, digest, signature);
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_sign is failed with status 0x%x\n", status);
+        return 2;
+    }
+
+    signaturefile = maybe_fopen(signaturefilename, "wb");
+    if (!signaturefile) {
+        perror("open signature file for writing");
+        return 1;
+    }
+
+    if (fwrite(signature, 1, sizeof (signature), signaturefile) !=
+            sizeof (signature)) {
+        perror("write signature to file");
+        maybe_fclose(signaturefile);
+        return 1;
+    }
+
+    maybe_fclose(signaturefile);
+
+    return 0;
+}
+
+void atecc_sign_help(const char *cmdname)
+{
+    eprintf("Usage %s <slot_id> message_file signature_file\n", cmdname);
+    eprintf("Calculates a signature for message using "
+            "private key in given slot\n");
+}

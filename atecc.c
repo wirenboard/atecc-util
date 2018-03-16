@@ -38,6 +38,7 @@ struct atecc_cmd commands[] = {
     {"ecc-write-priv", do_atecc_write_private, atecc_write_private_help},
     {"ecc-read-pub", do_atecc_read_pub, atecc_read_pub_help},
     {"ecc-gen-pub", do_atecc_gen_pub, atecc_gen_pub_help},
+    {"ecc-sign", do_atecc_sign, atecc_sign_help},
     { NULL, NULL, NULL }
 };
 
