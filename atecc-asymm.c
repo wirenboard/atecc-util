@@ -56,16 +56,6 @@ void atecc_gen_private_help(const char *cmdname)
     eprintf("If pubkey_file is set, also writes public key into file.\n");
 }
 
-int do_atecc_write_private(int argc, char **argv)
-{
-    return 0;
-}
-
-void atecc_write_private_help(const char *cmdname)
-{
-
-}
-
 int do_atecc_read_pub(int argc, char **argv)
 {
     ATCA_STATUS status;
