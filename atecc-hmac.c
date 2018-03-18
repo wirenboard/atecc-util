@@ -15,28 +15,25 @@ int do_atecc_hmac_write_key(int argc, char **argv)
 
     int slot_id = atoi(argv[1]);
     const char *keyfilename = argv[2];
+    size_t readlen = 0;
 
-    FILE *keyfile = fopen(keyfilename, "rb");
+    FILE *keyfile = maybe_fopen(keyfilename, "rb");
     if (!keyfile) {
         perror("open keyfile");
         return 1;
     }
 
-    /* check keyfile size */
-    fseek(keyfile, 0, SEEK_END);
-    long keylen = ftell(keyfile);
-    fseek(keyfile, 0, SEEK_SET);
-
-    if (keylen != HMAC_KEY_SIZE) {
-        eprintf("File size %ld != key size %d, abort\n", keylen, HMAC_KEY_SIZE);
-        fclose(keyfile);
+    uint8_t key[HMAC_KEY_SIZE];
+    readlen = fread(key, 1, sizeof (key), keyfile);
+    if (readlen != sizeof (key)) {
+        perror("read key from file");
+        maybe_fclose(keyfile);
         return 1;
     }
 
-    uint8_t key[HMAC_KEY_SIZE];
-    if (fread(key, 1, sizeof (key), keyfile) != sizeof (key)) {
-        perror("read key from file");
-        fclose(keyfile);
+    if (!feof(keyfile)) {
+        eprintf("Keyfile length is more than %lu, abort\n", sizeof (key));
+        maybe_fclose(keyfile);
         return 1;
     }
 
@@ -46,7 +43,7 @@ int do_atecc_hmac_write_key(int argc, char **argv)
         return 2;
     }
 
-    fclose(keyfile);
+    maybe_fclose(keyfile);
 
     return 0;
 }
