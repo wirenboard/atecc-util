@@ -22,6 +22,10 @@
 #define VERSION "(unknown version)"
 #endif
 
+#ifdef USE_OPENSSL
+#define WITH_OPENSSL ", with OpenSSL"
+#endif
+
 struct atecc_cmd {
     const char *name;
     int (*callback)(int, char**);
@@ -56,7 +60,7 @@ void print_available_cmds(void)
 
 void print_version(void)
 {
-    eprintf("atecc-util " VERSION ", build " __DATE__ " " __TIME__ "\n");
+    eprintf("atecc-util " VERSION WITH_OPENSSL ", build " __DATE__ " " __TIME__ "\n");
 }
 
 void print_help(const char *argv0, const char *cmd_name)

@@ -1,3 +1,5 @@
+USE_OPENSSL ?= 1
+
 ifdef CROSS_COMPILE
 CC=$(CROSS_COMPILE)gcc
 endif
