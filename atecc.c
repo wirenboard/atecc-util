@@ -33,6 +33,7 @@ struct atecc_cmd {
 };
 
 struct atecc_cmd commands[] = {
+    {"serial", do_atecc_print_serial, NULL},
     {"write-config", do_atecc_write_config, atecc_write_config_help},
     {"read-config", do_atecc_read_config, atecc_read_config_help},
     {"dump-config", do_atecc_dump_config, atecc_dump_config_help},
@@ -69,7 +70,11 @@ void print_help(const char *argv0, const char *cmd_name)
         struct atecc_cmd *cmds = commands;
         while (cmds->name != NULL) {
             if (strcmp(cmds->name, cmd_name) == 0) {
-                cmds->help(cmd_name);
+                if (cmds->help) {
+                    cmds->help(cmd_name);
+                } else {
+                    eprintf("There's no help for command %s\n", cmds->name);
+                }
                 return;
             }
             cmds++;
