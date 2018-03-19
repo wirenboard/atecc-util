@@ -13,7 +13,9 @@
 void atecc_dump_config_help(const char *cmdname)
 {
     eprintf("%s: dump ATECC config in human-readable format\n", cmdname);
-    eprintf("Usage: %s output.txt|-\n", cmdname);
+    eprintf("Usage: %s output.txt|- [config.bin]\n", cmdname);
+    eprintf("If optional third argument is set, "
+            "dumps config from binary file.\n");
 }
 
 void dump_config(uint8_t config_zone[ATCA_ECC_CONFIG_SIZE])
@@ -53,40 +55,51 @@ void dump_config(uint8_t config_zone[ATCA_ECC_CONFIG_SIZE])
 
 int do_atecc_dump_config(int argc, char **argv)
 {
-    int ret = 0;
+    ATCA_STATUS status;
+    uint8_t config_zone[ATCA_ECC_CONFIG_SIZE];
 
-    if (argc < 2) {
+    if (argc != 2 && argc != 3) {
         atecc_dump_config_help(argv[0]);
         return 1;
     }
 
-    const char *filename = argv[1];
-    if (strlen(filename) == 0) {
-        filename = "-";
+    const char *outputfilename = argv[1];
+    if (strlen(outputfilename) == 0) {
+        outputfilename = "-";
     }
 
-    int saved_stdout = maybe_set_stdout(filename);
+    if (argc == 3) {  /* read from binary file */
+        FILE *input = maybe_fopen(argv[2], "rb");
+        if (!input) {
+            perror("open config blob file for reading");
+            return 1;
+        }
+
+        if (sizeof (config_zone) !=
+                fread(config_zone, 1, sizeof (config_zone), input)) {
+            perror("read config blob");
+            maybe_fclose(input);
+            return 1;
+        }
+
+        maybe_fclose(input);
+    } else {
+        if ((status = atcab_read_config_zone(config_zone)) != ATCA_SUCCESS) {
+            eprintf("Command atcab_read_config_zone failed with status 0x%x\n",
+                    status);
+            return 2;
+        }
+    }
+
+    int saved_stdout = maybe_set_stdout(outputfilename);
     if (saved_stdout < 0) {
         perror("open config dump file for writing");
         return 1;
     }
-
-    ATCA_STATUS status;
-    uint8_t config_zone[ATCA_ECC_CONFIG_SIZE];
-
-    if ((status = atcab_read_config_zone(config_zone)) != ATCA_SUCCESS) {
-        eprintf("Command atcab_read_config_zone failed with status 0x%x\n",
-                status);
-        ret = 2;
-        goto _dcexit;
-    }
-
     dump_config(config_zone);
-
-_dcexit:
     maybe_restore_stdout(saved_stdout);
 
-    return ret;
+    return 0;
 }
 
 void atecc_read_config_help(const char *cmdname)
