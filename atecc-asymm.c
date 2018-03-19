@@ -56,6 +56,80 @@ void atecc_gen_private_help(const char *cmdname)
     eprintf("If pubkey_file is set, also writes public key into file.\n");
 }
 
+int do_atecc_write_private(int argc, char **argv)
+{
+    if (argc != 3 && argc != 5) {
+        atecc_write_private_help(argv[0]);
+        return 1;
+    }
+
+    ATCA_STATUS status;
+    int key_id = atoi(argv[1]);
+    uint8_t privatekey[ATCA_PRIV_KEY_SIZE];
+    const char *privatekeyfilename = argv[2];
+    FILE *privatekeyfile = NULL, *writekeyfile = NULL;
+
+    int writekey_id = -1;
+    uint8_t writekeybuffer[ATCA_KEY_SIZE];
+    uint8_t *writekey = NULL;
+    const char *writekeyfilename = NULL;
+
+    if (argc == 5) {
+        writekey = writekeybuffer;
+        writekey_id = atoi(argv[3]);
+        writekeyfilename = argv[4];
+
+        /* read write key */
+        writekeyfile = maybe_fopen(writekeyfilename, "rb");
+        if (!writekeyfile) {
+            perror("open write key for reading");
+            return 1;
+        }
+
+        if (sizeof (writekeybuffer) !=
+                fread(writekeybuffer, 1, sizeof (writekeybuffer), writekeyfile)) {
+            perror("read write key from file");
+            maybe_fclose(writekeyfile);
+            return 1;
+        }
+
+        maybe_fclose(writekeyfile);
+    }
+
+    /* read private key */
+    privatekeyfile = maybe_fopen(privatekeyfilename, "rb");
+    if (!privatekeyfile) {
+        perror("open private key file for reading");
+        return 1;
+    }
+
+    if (sizeof (privatekey) !=
+            fread(privatekey, 1, sizeof (privatekey), privatekeyfile)) {
+        perror("read private key from file");
+        maybe_fclose(privatekeyfile);
+        return 1;
+    }
+
+    maybe_fclose(privatekeyfile);
+
+    status = atcab_priv_write(key_id, privatekey, writekey_id, writekey);
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_priv_write is failed with status 0x%x\n", status);
+        return 2;
+    }
+
+    return 0;
+}
+
+void atecc_write_private_help(const char *cmdname)
+{
+    eprintf("Usage: %s <slot_id> private_key_file "
+            "[<write_key_slot> write_key_file]\n", cmdname);
+    eprintf("Writes an ECDSA private key in given slot.\n");
+    eprintf("If data section is locked, you also need to "
+            "determine write key.\n");
+}
+
 int do_atecc_read_pub(int argc, char **argv)
 {
     ATCA_STATUS status;
