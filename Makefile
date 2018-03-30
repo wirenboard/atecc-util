@@ -1,4 +1,4 @@
-USE_OPENSSL ?= 1
+USE_OPENSSL ?= y
 
 ifdef CROSS_COMPILE
 CC=$(CROSS_COMPILE)gcc
@@ -22,7 +22,7 @@ OBJS=atecc.o \
 	 util.o \
 	 ../helpers/atecc_config_zone.o
 
-ifdef USE_OPENSSL
+ifeq ($(USE_OPENSSL),y)
 CFLAGS+=-DUSE_OPENSSL_SHA256=1 -DUSE_OPENSSL=1
 LDFLAGS+=-lcrypto
 else

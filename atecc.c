@@ -24,6 +24,8 @@
 
 #ifdef USE_OPENSSL
 #define WITH_OPENSSL ", with OpenSSL"
+#else
+#define WITH_OPENSSL ""
 #endif
 
 struct atecc_cmd {
