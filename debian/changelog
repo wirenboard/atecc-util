@@ -1,3 +1,10 @@
+atecc-util (0.2) stable; urgency=medium
+
+  * add lock-slot command
+  * fail on unknown commands
+
+ -- Nikita Maslov <n.maslov@contactless.ru>  Tue, 03 Apr 2018 18:49:14 +0300
+
 atecc-util (0.1) unstable; urgency=medium
 
   * Initial release
