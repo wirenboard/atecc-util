@@ -249,3 +249,28 @@ int do_atecc_lock_config(int argc, char **argv)
 
     return 0;
 }
+
+void atecc_lock_slot_help(const char *cmdname)
+{
+    eprintf("%s: lock ATECC slot zone. This can't be undone!\n", cmdname);
+    eprintf("Usage: %s <slot_id>\n", cmdname);
+}
+
+int do_atecc_lock_slot(int argc, char **argv)
+{
+    if (argc < 2) {
+        atecc_lock_slot_help(argv[0]);
+        return 1;
+    }
+
+    uint16_t slot_id = atoi(argv[1]);
+
+    ATCA_STATUS status;
+    status = atcab_lock_data_slot(slot_id);
+    if (status != ATCA_SUCCESS) {
+        printf("Command atcab_lock_data_slot is failed with status 0x%x\n", status);
+        return 2;
+    }
+
+    return 0;
+}
