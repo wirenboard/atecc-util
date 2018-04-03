@@ -170,6 +170,15 @@ int main(int argc, char *argv[])
             cmdlist++;
         }
 
+        // if we are here, no such command found
+        if (cmdlist->name == NULL) {
+            eprintf("Unknown command: %s\n", p.we_wordv[0]);
+            print_help(argv0, NULL);
+            wordfree(&p);
+            ret = 1;
+            goto _exit;
+        }
+
         wordfree(&p);
     }
 
