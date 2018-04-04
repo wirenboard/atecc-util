@@ -1,9 +1,10 @@
 atecc-util (0.2) stable; urgency=medium
 
   * add lock-slot command
+  * add read-counter command
   * fail on unknown commands
 
- -- Nikita Maslov <n.maslov@contactless.ru>  Tue, 03 Apr 2018 18:49:14 +0300
+ -- Nikita Maslov <n.maslov@contactless.ru>  Wed, 04 Apr 2018 10:23:21 +0300
 
 atecc-util (0.1) unstable; urgency=medium
 
