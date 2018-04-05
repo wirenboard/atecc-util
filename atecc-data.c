@@ -214,7 +214,9 @@ int do_atecc_read_counter(int argc, char **argv)
         value = 0;
         for (unsigned i = 0; i < sizeof (buf); i++) {
             while (buf[i]) {
-                value++;
+                if (buf[i] & 0x80) {
+                    value++;
+                }
                 buf[i] <<= 1;
             }
         }
