@@ -231,3 +231,37 @@ void atecc_read_counter_help(const char *cmdname)
 {
     eprintf("Usage: %s <counter_id>\nValid counter IDs: 0, 1, 15\n", cmdname);
 }
+
+int do_atecc_increase_counter(int argc, char **argv)
+{
+    if (argc < 2) {
+        atecc_increase_counter_help(argv[0]);
+        return 1;
+    }
+
+    ATCA_STATUS status;
+
+    uint16_t counter_id = atoi(argv[1]);
+    uint32_t value = 0;
+
+    if (counter_id <= 1) {
+        status = atcab_counter_increment(counter_id, &value);
+        if (status != ATCA_SUCCESS) {
+            eprintf("Command atcab_couter_increase is failed with status 0x%x\n",
+                    status);
+            return 2;
+        }
+    } else {
+        atecc_increase_counter_help(argv[0]);
+        return 1;
+    }
+
+    printf("Counter %d: %u\n", counter_id, value);
+
+    return 0;
+}
+
+void atecc_increase_counter_help(const char *cmdname)
+{
+    eprintf("Usage: %s <counter_id>\nValid counter IDs: 0, 1, 15\n", cmdname);
+}

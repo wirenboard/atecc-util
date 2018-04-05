@@ -52,6 +52,7 @@ struct atecc_cmd commands[] = {
     {"lock-data", do_atecc_lock_data, atecc_lock_data_help},
     {"lock-slot", do_atecc_lock_slot, atecc_lock_slot_help},
     {"read-counter", do_atecc_read_counter, atecc_read_counter_help},
+    {"counter-inc", do_atecc_increase_counter, atecc_increase_counter_help},
     { NULL, NULL, NULL }
 };
 
