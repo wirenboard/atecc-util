@@ -164,6 +164,13 @@ int main(int argc, char *argv[])
 
         struct atecc_cmd *cmdlist = commands;
         while (cmdlist->name != NULL) {
+            if (!p.we_wordv[0]) {
+                print_help(argv0, NULL);
+                ret = 1;
+                wordfree(&p);
+                goto _exit;
+            }
+
             if (strcmp(cmdlist->name, p.we_wordv[0]) == 0) {
                 ret = cmdlist->callback(p.we_wordc, p.we_wordv);
                 if (ret != 0) {
