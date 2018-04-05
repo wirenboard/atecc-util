@@ -17,6 +17,7 @@
 #include "atecc-hmac.h"
 #include "atecc-asymm.h"
 #include "atecc-data.h"
+#include "atecc-counter.h"
 
 #ifndef VERSION
 #define VERSION "(unknown version)"
@@ -51,8 +52,9 @@ struct atecc_cmd commands[] = {
     {"read-data", do_atecc_read_data, atecc_read_data_help},
     {"lock-data", do_atecc_lock_data, atecc_lock_data_help},
     {"lock-slot", do_atecc_lock_slot, atecc_lock_slot_help},
-    {"read-counter", do_atecc_read_counter, atecc_read_counter_help},
+    {"counter-read", do_atecc_read_counter, atecc_read_counter_help},
     {"counter-inc", do_atecc_increase_counter, atecc_increase_counter_help},
+    {"counter-init", do_atecc_init_counter, atecc_init_counter_help},
     { NULL, NULL, NULL }
 };
 

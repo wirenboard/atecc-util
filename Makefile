@@ -18,6 +18,7 @@ OBJS=atecc.o \
 	 atecc-hmac.o \
 	 atecc-asymm.o \
 	 atecc-data.o \
+	 atecc-counter.o \
 	 helpers.o \
 	 util.o \
 	 ../helpers/atecc_config_zone.o
