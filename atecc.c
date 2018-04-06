@@ -41,6 +41,7 @@ struct atecc_cmd commands[] = {
     {"read-config", do_atecc_read_config, atecc_read_config_help},
     {"dump-config", do_atecc_dump_config, atecc_dump_config_help},
     {"lock-config", do_atecc_lock_config, atecc_lock_config_help},
+    {"config-is-locked", do_atecc_config_is_locked, atecc_config_is_locked_help},
     {"hmac-write-key", do_atecc_hmac_write_key, atecc_hmac_write_key_help},
     {"hmac-dgst", do_atecc_hmac_dgst, atecc_hmac_dgst_help},
     {"ecc-gen", do_atecc_gen_private, atecc_gen_private_help},

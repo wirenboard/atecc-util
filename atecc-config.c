@@ -274,3 +274,33 @@ int do_atecc_lock_slot(int argc, char **argv)
 
     return 0;
 }
+
+int do_atecc_config_is_locked(int argc, char **argv)
+{
+    (void) argc;
+    (void) argv;
+
+    ATCA_STATUS status;
+    bool state;
+
+    status = atcab_is_locked(ATCA_ZONE_CONFIG, &state);
+
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_is_locked is failed with status 0x%x\n", status);
+        return 2;
+    }
+
+    if (state) {
+        eprintf("Config zone is locked\n");
+        return 0;
+    } else {
+        eprintf("Config zone is unlocked\n");
+        return 1;
+    }
+}
+
+void atecc_config_is_locked_help(const char *cmdname)
+{
+    eprintf("Usage: %s\nReturns 0 if config is locked, "
+            "1 if unlocked, 2 on error\n", cmdname);
+}
