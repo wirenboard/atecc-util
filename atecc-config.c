@@ -243,7 +243,7 @@ int do_atecc_lock_config(int argc, char **argv)
     ATCA_STATUS status;
     status = atcab_lock_config_zone();
     if (status != ATCA_SUCCESS) {
-        printf("Command atcab_lock_config_zone is failed with status 0x%x\n", status);
+        eprintf("Command atcab_lock_config_zone is failed with status 0x%x\n", status);
         return 2;
     }
 
@@ -268,7 +268,7 @@ int do_atecc_lock_slot(int argc, char **argv)
     ATCA_STATUS status;
     status = atcab_lock_data_slot(slot_id);
     if (status != ATCA_SUCCESS) {
-        printf("Command atcab_lock_data_slot is failed with status 0x%x\n", status);
+        eprintf("Command atcab_lock_data_slot is failed with status 0x%x\n", status);
         return 2;
     }
 
