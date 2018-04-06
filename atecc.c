@@ -56,6 +56,8 @@ struct atecc_cmd commands[] = {
     {"counter-read", do_atecc_read_counter, atecc_read_counter_help},
     {"counter-inc", do_atecc_increase_counter, atecc_increase_counter_help},
     {"counter-init", do_atecc_init_counter, atecc_init_counter_help},
+    {"extra-set", do_atecc_extra_set, atecc_extra_set_help},
+    {"extra-get", do_atecc_extra_get, atecc_extra_get_help},
     { NULL, NULL, NULL }
 };
 

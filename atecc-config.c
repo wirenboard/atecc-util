@@ -304,3 +304,78 @@ void atecc_config_is_locked_help(const char *cmdname)
     eprintf("Usage: %s\nReturns 0 if config is locked, "
             "1 if unlocked, 2 on error\n", cmdname);
 }
+
+int do_atecc_extra_set(int argc, char **argv)
+{
+    if (argc < 3) {
+        atecc_extra_set_help(argv[0]);
+        return 1;
+    }
+
+    ATCA_STATUS status;
+    int address = atoi(argv[1]);
+    uint16_t value = atoi(argv[2]);
+
+    value &= 0xFF;
+
+    uint8_t mode = 0;
+    if (address == 84) {
+        mode = 0;
+    } else if (address == 85) {
+        mode = 1;
+    } else {
+        atecc_extra_set_help(argv[0]);
+        return 1;
+    }
+
+    status = atcab_updateextra(mode, value);
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_updateextra is failed with status 0x%x\n",
+                status);
+        return 2;
+    }
+
+    return 0;
+}
+
+void atecc_extra_set_help(const char *cmdname)
+{
+    eprintf("Usage: %s <address> <value>\n"
+            "Writes extra byte in specific address.\n"
+            "Correct addresses are 84 and 85.\n", cmdname);
+}
+
+int do_atecc_extra_get(int argc, char **argv)
+{
+    if (argc < 2) {
+        atecc_extra_get_help(argv[0]);
+        return 1;
+    }
+
+    ATCA_STATUS status;
+    int address = atoi(argv[1]);
+    uint8_t value;
+
+    if (address != 84 && address != 85) {
+        atecc_extra_get_help(argv[0]);
+        return 1;
+    }
+
+    status = atcab_read_bytes_zone(ATCA_ZONE_CONFIG, 0, address, &value, 1);
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_read_bytes_zone is failed with status 0x%x\n",
+                status);
+        return 2;
+    }
+
+    printf("Extra %02d: 0x%02hhx\n", address, value);
+
+    return 0;
+}
+
+void atecc_extra_get_help(const char *cmdname)
+{
+    eprintf("Usage: %s <address>\n"
+            "Reads extra byte from specific address.\n"
+            "Correct addresses are 84 and 85.\n", cmdname);
+}
