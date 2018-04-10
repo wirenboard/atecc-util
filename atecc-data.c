@@ -180,3 +180,67 @@ void atecc_lock_data_help(const char *cmdname)
     eprintf("Usage: %s\nLocks data zone. This can't be undone!\n",
             cmdname);
 }
+
+int do_atecc_data_is_locked(int argc, char **argv)
+{
+    (void) argc;
+    (void) argv;
+
+    ATCA_STATUS status;
+    bool state;
+
+    status = atcab_is_locked(LOCK_ZONE_DATA, &state);
+
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_is_locked is failed with status 0x%x\n", status);
+        return 2;
+    }
+
+    if (state) {
+        eprintf("Data zone is locked\n");
+        return 0;
+    } else {
+        eprintf("Data zone is unlocked\n");
+        return 1;
+    }
+}
+
+void atecc_data_is_locked_help(const char *cmdname)
+{
+    eprintf("Usage: %s\nReturns 0 if data is locked, "
+            "1 if unlocked, 2 on error\n", cmdname);
+}
+
+int do_atecc_slot_is_locked(int argc, char **argv)
+{
+    if (argc < 2) {
+        atecc_slot_is_locked_help(argv[0]);
+        return 2;
+    }
+
+    uint16_t slot = atoi(argv[1]);
+
+    ATCA_STATUS status;
+    bool state;
+
+    status = atcab_is_slot_locked(slot, &state);
+
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_is_slot_locked is failed with status 0x%x\n", status);
+        return 2;
+    }
+
+    if (state) {
+        eprintf("Slot %hu is locked\n", slot);
+        return 0;
+    } else {
+        eprintf("Slot %hu is unlocked\n", slot);
+        return 1;
+    }
+}
+
+void atecc_slot_is_locked_help(const char *cmdname)
+{
+    eprintf("Usage: %s <slot>\nReturns 0 if slot is locked, "
+            "1 if unlocked, 2 on error\n", cmdname);
+}

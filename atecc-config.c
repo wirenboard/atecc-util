@@ -292,7 +292,7 @@ int do_atecc_config_is_locked(int argc, char **argv)
     ATCA_STATUS status;
     bool state;
 
-    status = atcab_is_locked(ATCA_ZONE_CONFIG, &state);
+    status = atcab_is_locked(LOCK_ZONE_CONFIG, &state);
 
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_is_locked is failed with status 0x%x\n", status);
