@@ -10,6 +10,8 @@
 #include "basic/atca_basic.h"
 #include "atecc_config_zone.h"
 
+#define CONFIG_ZONE_SLOTLOCKED_OFFSET 88
+
 void atecc_dump_config_help(const char *cmdname)
 {
     eprintf("%s: dump ATECC config in human-readable format\n", cmdname);
@@ -43,6 +45,13 @@ void dump_config(uint8_t config_zone[ATCA_ECC_CONFIG_SIZE])
     // }
     // printf("]\n");
 
+    uint16_t locks = config_zone[CONFIG_ZONE_SLOTLOCKED_OFFSET] | config_zone[CONFIG_ZONE_SLOTLOCKED_OFFSET + 1] << 8;
+
+    printf("===== Individual locks configuration ==\n");
+    for (size_t slot = 0; slot < ATCA_KEY_COUNT; ++slot) {
+        printf(" Slot %02u: %s\n", (unsigned) slot, (locks & (1 << slot)) ? "unlocked" : "LOCKED");
+    }
+    printf("\n");
 
     printf("===== Slot configurations============\n");
     for (size_t slot = 0; slot < ATCA_KEY_COUNT; ++slot) {
