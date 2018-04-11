@@ -18,6 +18,7 @@
 #include "atecc-asymm.h"
 #include "atecc-data.h"
 #include "atecc-counter.h"
+#include "atecc-ecdh.h"
 
 #ifndef VERSION
 #define VERSION "(unknown version)"
@@ -60,6 +61,7 @@ struct atecc_cmd commands[] = {
     {"counter-init", do_atecc_init_counter, atecc_init_counter_help},
     {"extra-set", do_atecc_extra_set, atecc_extra_set_help},
     {"extra-get", do_atecc_extra_get, atecc_extra_get_help},
+    {"ecdh", do_atecc_ecdh, atecc_ecdh_help},
     { NULL, NULL, NULL }
 };
 
