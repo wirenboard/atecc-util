@@ -14,3 +14,6 @@ void atecc_gen_pub_help(const char *cmdname);
 
 int do_atecc_sign(int argc, char **argv);
 void atecc_sign_help(const char *cmdname);
+
+int do_atecc_verify(int argc, char **argv);
+void atecc_verify_help(const char *cmdname);

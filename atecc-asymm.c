@@ -269,3 +269,92 @@ void atecc_sign_help(const char *cmdname)
     eprintf("Calculates a signature for message using "
             "private key in given slot\n");
 }
+
+int do_atecc_verify(int argc, char **argv)
+{
+    if (argc < 4) {
+        atecc_verify_help(argv[0]);
+        return 2;
+    }
+
+    uint16_t slot_id = atoi(argv[1]);
+    const char *messagefilename = argv[2];
+    const char *signaturefilename = argv[3];
+
+    const char *pubkeyfilename = NULL;
+    uint8_t pubkey[ATCA_PUB_KEY_SIZE];
+
+    if (argc == 5) {
+        pubkeyfilename = argv[4];
+
+        FILE *pubkeyfile = fopen(pubkeyfilename, "rb");
+        if (!pubkeyfile) {
+            perror("open public key file for reading");
+            return 2;
+        }
+
+        if (fread(pubkey, 1, sizeof (pubkey), pubkeyfile) !=
+                    sizeof (pubkey)) {
+            perror("read pubkey from file");
+            fclose(pubkeyfile);
+            return 2;
+        }
+
+        fclose(pubkeyfile);
+    }
+
+    uint8_t signature[ATCA_SIG_SIZE];
+    uint8_t digest[ATCA_SHA2_256_DIGEST_SIZE];
+    bool verified = false;
+
+    ATCA_STATUS status;
+
+    if (sha256_file(messagefilename, digest)) {
+        return 2;
+    }
+
+    FILE *signaturefile = maybe_fopen(signaturefilename, "rb");
+    if (!signaturefile) {
+        perror("open signature file for reading");
+        return 2;
+    }
+
+    if (fread(signature, 1, sizeof (signature), signaturefile) !=
+            sizeof (signature)) {
+        perror("read signature from file");
+        return 2;
+    }
+
+    maybe_fclose(signaturefile);
+
+    if (!pubkeyfilename) {
+        status = atcab_verify_stored(digest, signature, slot_id, &verified);
+        if (status != ATCA_SUCCESS) {
+            eprintf("Command atcab_verify_stored is failed with status 0x%x\n",
+                    status);
+            return 2;
+        }
+    } else {
+        status = atcab_verify_extern(digest, signature, pubkey, &verified);
+        if (status != ATCA_SUCCESS) {
+            eprintf("Command atcab_verify_extern is failed with status 0x%x\n",
+                    status);
+            return 2;
+        }
+    }
+
+    if (verified) {
+        eprintf("Verification OK\n");
+        return 0;
+    } else {
+        eprintf("Verification FAILED\n");
+        return 1;
+    }
+}
+
+void atecc_verify_help(const char *cmdname)
+{
+    eprintf("Usage %s <slot_id> message_file signature_file [pubkey]\n", cmdname);
+    eprintf("Verifies a signature for message using "
+            "public key in given slot\n");
+}

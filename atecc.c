@@ -50,6 +50,7 @@ struct atecc_cmd commands[] = {
     {"ecc-read-pub", do_atecc_read_pub, atecc_read_pub_help},
     {"ecc-gen-pub", do_atecc_gen_pub, atecc_gen_pub_help},
     {"ecc-sign", do_atecc_sign, atecc_sign_help},
+    {"ecc-verify", do_atecc_verify, atecc_verify_help},
     {"write-data", do_atecc_write_data, atecc_write_data_help},
     {"write-data-block", do_atecc_hmac_write_key, atecc_hmac_write_key_help},
     {"read-data", do_atecc_read_data, atecc_read_data_help},
