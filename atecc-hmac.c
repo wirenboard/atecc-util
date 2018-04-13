@@ -78,9 +78,9 @@ int do_atecc_hmac_write_key(int argc, char **argv)
 
 void atecc_hmac_write_key_help(const char *cmdname)
 {
-    eprintf("Usage: %s <slot_id> keyfile [write_key <write_key_id>]\n", cmdname);
-    eprintf("\tslot_id\tID of slot to write HMAC key to\n");
-    eprintf("\tkeyfile\tFile containing HMAC key to write (32 bytes long)\n");
+    eprintf("Usage: %s <slot_id> data_file [write_key <write_key_id>]\n", cmdname);
+    eprintf("\tslot_id\tID of slot to write data block to\n");
+    eprintf("\tkeyfile\tFile containing data block to write (32 bytes long)\n");
     eprintf("\twrite_key\tFile containing write-guarding key (32 bytes long)\n");
     eprintf("\twrite_key_id\tID of write key on device\n");
 }

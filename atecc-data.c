@@ -113,20 +113,63 @@ int do_atecc_read_data(int argc, char **argv)
     uint8_t *outputbuffer = NULL;
     ATCA_STATUS status;
 
-    outputbuffer = (uint8_t *) malloc(outputsize);
-    if (!outputbuffer) {
-        perror("allocating slot buffer");
-        return 1;
+    uint8_t readkey[ATCA_KEY_SIZE];
+    const char *readkeyfilename = NULL;
+    uint16_t readkey_slot;
+
+    if (argc == 7) {
+        readkeyfilename = argv[5];
+        readkey_slot = atoi(argv[6]);
+
+        size_t readsize;
+        FILE *readkeyfile = fopen(readkeyfilename, "rb");
+        if (!readkeyfile) {
+            perror("open read key file for reading");
+            return 1;
+        }
+
+        readsize = fread(readkey, 1, sizeof (readkey), readkeyfile);
+        if (readsize != sizeof (readkey)) {
+            perror("read read key from file");
+            fclose(readkeyfile);
+            return 1;
+        }
+
+        fclose(readkeyfile);
     }
 
     /* read data from ATECC */
-    status = atcab_read_bytes_zone(ATCA_ZONE_DATA, slot_id, offset,
-                outputbuffer, outputsize);
-    if (status != ATCA_SUCCESS) {
-        eprintf("Command atcab_read_bytes_zone is failed with status 0x%x\n",
-                status);
-        free(outputbuffer);
-        return 2;
+    if (readkeyfilename != NULL) {
+        outputsize = min(outputsize, ATCA_KEY_SIZE);
+        outputbuffer = (uint8_t *) malloc(ATCA_KEY_SIZE);
+        if (!outputbuffer) {
+            perror("allocating slot buffer");
+            return 1;
+        }
+
+        status = atcab_read_enc(slot_id, offset, outputbuffer,
+                readkey, readkey_slot);
+        if (status != ATCA_SUCCESS) {
+            eprintf("Command atcab_read_enc is failed with status 0x%x\n",
+                    status);
+            free(outputbuffer);
+            return 2;
+        }
+    } else {
+        outputbuffer = (uint8_t *) malloc(outputsize);
+        if (!outputbuffer) {
+            perror("allocating slot buffer");
+            return 1;
+        }
+
+        status = atcab_read_bytes_zone(ATCA_ZONE_DATA, slot_id, offset,
+                    outputbuffer, outputsize);
+        if (status != ATCA_SUCCESS) {
+            eprintf("Command atcab_read_bytes_zone is failed with status 0x%x\n",
+                    status);
+            free(outputbuffer);
+            return 2;
+        }
     }
 
     outputfile = maybe_fopen(outputfilename, "wb");
@@ -153,9 +196,10 @@ int do_atecc_read_data(int argc, char **argv)
 
 void atecc_read_data_help(const char *cmdname)
 {
-    eprintf("Usage: %s <slot_id> <offset> <size> output_file\n", cmdname);
+    eprintf("Usage: %s <slot_id> <offset> <size> output_file "
+            "[readkey_file <readkey_slot>]\n", cmdname);
     eprintf("Reads data from specific slot with offset.\n"
-            "Data is read as plaintext.\n");
+            "If keys are not set, data is read as plaintext.\n");
 }
 
 int do_atecc_lock_data(int argc, char **argv)

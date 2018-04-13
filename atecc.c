@@ -51,6 +51,7 @@ struct atecc_cmd commands[] = {
     {"ecc-gen-pub", do_atecc_gen_pub, atecc_gen_pub_help},
     {"ecc-sign", do_atecc_sign, atecc_sign_help},
     {"write-data", do_atecc_write_data, atecc_write_data_help},
+    {"write-data-block", do_atecc_hmac_write_key, atecc_hmac_write_key_help},
     {"read-data", do_atecc_read_data, atecc_read_data_help},
     {"lock-data", do_atecc_lock_data, atecc_lock_data_help},
     {"data-is-locked", do_atecc_data_is_locked, atecc_data_is_locked_help},
