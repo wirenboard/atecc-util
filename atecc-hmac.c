@@ -8,19 +8,20 @@
 
 int do_atecc_hmac_write_key(int argc, char **argv)
 {
-    if (argc < 3 || argc == 4) {
+    if (argc < 4 || argc == 5) {
         atecc_hmac_write_key_help(argv[0]);
         return 1;
     }
 
     int slot_id = atoi(argv[1]);
-    const char *keyfilename = argv[2];
+    int offset = atoi(argv[2]);
+    const char *keyfilename = argv[3];
     const char *writekeyfilename = NULL;
     uint16_t key_id = 0;
 
-    if (argc == 5) {
-        writekeyfilename = argv[3];
-        key_id = atoi(argv[4]);
+    if (argc == 6) {
+        writekeyfilename = argv[4];
+        key_id = atoi(argv[5]);
     }
     size_t readlen = 0;
 
@@ -60,13 +61,13 @@ int do_atecc_hmac_write_key(int argc, char **argv)
 
     ATCA_STATUS status;
     if (!writekeyfilename) {
-        status = atcab_write_zone(ATCA_ZONE_DATA, slot_id, 0, 0, key, 32);
+        status = atcab_write_zone(ATCA_ZONE_DATA, slot_id, offset, 0, key, 32);
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_write_zone is failed with status 0x%x\n", status);
             return 2;
         }
     } else {
-        status = atcab_write_enc(slot_id, 0, key, writekey, key_id);
+        status = atcab_write_enc(slot_id, offset, key, writekey, key_id);
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_write_enc is failed with status 0x%x\n", status);
             return 2;
@@ -78,8 +79,9 @@ int do_atecc_hmac_write_key(int argc, char **argv)
 
 void atecc_hmac_write_key_help(const char *cmdname)
 {
-    eprintf("Usage: %s <slot_id> data_file [write_key <write_key_id>]\n", cmdname);
+    eprintf("Usage: %s <slot_id> <offset> data_file [write_key <write_key_id>]\n", cmdname);
     eprintf("\tslot_id\tID of slot to write data block to\n");
+    eprintf("\toffset\tOffset (in 32-byte blocks) to write data block to\n");
     eprintf("\tkeyfile\tFile containing data block to write (32 bytes long)\n");
     eprintf("\twrite_key\tFile containing write-guarding key (32 bytes long)\n");
     eprintf("\twrite_key_id\tID of write key on device\n");
