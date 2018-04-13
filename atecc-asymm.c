@@ -20,17 +20,10 @@ int do_atecc_gen_private(int argc, char **argv)
     int key_id = atoi(argv[1]);
     const char *pubkeyfilename = NULL;
     FILE *pubkeyfile = NULL;
-    uint8_t pubkeybuffer[ATCA_PUB_KEY_SIZE];
-    uint8_t *pubkey = NULL;
+    uint8_t pubkey[ATCA_PUB_KEY_SIZE];
 
     if (argc == 3) {
         pubkeyfilename = argv[2];
-        pubkey = pubkeybuffer;
-        pubkeyfile = maybe_fopen(pubkeyfilename, "wb");
-        if (!pubkeyfile) {
-            perror("open public key file for writing");
-            return 1;
-        }
     }
 
     status = atcab_genkey(key_id, pubkey);
@@ -42,7 +35,20 @@ int do_atecc_gen_private(int argc, char **argv)
         return 2;
     }
 
-    if (pubkeyfile) {
+    if (pubkeyfilename) {
+        pubkeyfile = maybe_fopen(pubkeyfilename, "wb");
+        if (!pubkeyfile) {
+            perror("open public key file for writing");
+            return 1;
+        }
+
+        if (fwrite(pubkey, 1, sizeof (pubkey), pubkeyfile) !=
+                sizeof (pubkey)) {
+            perror("write public key to file");
+            maybe_fclose(pubkeyfile);
+            return 1;
+        }
+
         maybe_fclose(pubkeyfile);
     }
 
