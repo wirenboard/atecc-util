@@ -27,7 +27,7 @@ int do_atecc_hmac_write_key(int argc, char **argv)
 
     uint8_t writekey[HMAC_KEY_SIZE];
     if (writekeyfilename) {
-        FILE *writekeyfile = fopen(writekeyfilename, "rb");
+        FILE *writekeyfile = maybe_fopen(writekeyfilename, "rb");
         if (!writekeyfile) {
             perror("open writekey file");
             return 1;
@@ -36,11 +36,11 @@ int do_atecc_hmac_write_key(int argc, char **argv)
         readlen = fread(writekey, 1, sizeof (writekey), writekeyfile);
         if (readlen != sizeof (writekey)) {
             perror("read write key from file");
-            fclose(writekeyfile);
+            maybe_fclose(writekeyfile);
             return 1;
         }
 
-        fclose(writekeyfile);
+        maybe_fclose(writekeyfile);
     }
 
     FILE *keyfile = maybe_fopen(keyfilename, "rb");
@@ -85,6 +85,8 @@ void atecc_hmac_write_key_help(const char *cmdname)
     eprintf("\tkeyfile\tFile containing data block to write (32 bytes long)\n");
     eprintf("\twrite_key\tFile containing write-guarding key (32 bytes long)\n");
     eprintf("\twrite_key_id\tID of write key on device\n");
+    eprintf("If both data and readkey must be read from stdin, "
+            "key is read first.");
 }
 
 int do_atecc_hmac_dgst(int argc, char **argv)

@@ -122,7 +122,7 @@ int do_atecc_read_data(int argc, char **argv)
         readkey_slot = atoi(argv[6]);
 
         size_t readsize;
-        FILE *readkeyfile = fopen(readkeyfilename, "rb");
+        FILE *readkeyfile = maybe_fopen(readkeyfilename, "rb");
         if (!readkeyfile) {
             perror("open read key file for reading");
             return 1;
@@ -131,11 +131,11 @@ int do_atecc_read_data(int argc, char **argv)
         readsize = fread(readkey, 1, sizeof (readkey), readkeyfile);
         if (readsize != sizeof (readkey)) {
             perror("read read key from file");
-            fclose(readkeyfile);
+            maybe_fclose(readkeyfile);
             return 1;
         }
 
-        fclose(readkeyfile);
+        maybe_fclose(readkeyfile);
     }
 
     /* read data from ATECC */
