@@ -241,8 +241,9 @@ int do_atecc_sign(int argc, char **argv)
     uint8_t signature[ATCA_SIG_SIZE];
     uint8_t digest[ATCA_SHA2_256_DIGEST_SIZE];
 
-    if (sha256_file(messagefilename, digest)) {
-        return 1;
+    int sha_status = sha256_file(messagefilename, digest);
+    if (sha_status != 0) {
+        return sha_status;
     }
 
     status = atcab_sign(slot_id, digest, signature);
@@ -315,8 +316,9 @@ int do_atecc_verify(int argc, char **argv)
 
     ATCA_STATUS status;
 
-    if (sha256_file(messagefilename, digest)) {
-        return 2;
+    int sha_status = sha256_file(messagefilename, digest);
+    if (sha_status != 0) {
+        return sha_status;
     }
 
     FILE *signaturefile = maybe_fopen(signaturefilename, "rb");
