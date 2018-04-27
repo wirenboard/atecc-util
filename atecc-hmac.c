@@ -1,5 +1,6 @@
 #include "atecc-hmac.h"
 #include "helpers.h"
+#include "util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,18 +61,26 @@ int do_atecc_hmac_write_key(int argc, char **argv)
     maybe_fclose(keyfile);
 
     ATCA_STATUS status;
-    if (!writekeyfilename) {
-        status = atcab_write_zone(ATCA_ZONE_DATA, slot_id, offset, 0, key, 32);
-        if (status != ATCA_SUCCESS) {
-            eprintf("Command atcab_write_zone is failed with status 0x%x\n", status);
-            return 2;
+    const char *cmd;
+    do {
+        if (!writekeyfilename) {
+            cmd = "atcab_write_zone";
+            status = atcab_write_zone(ATCA_ZONE_DATA, slot_id, offset, 0, key, 32);
+            if (status != ATCA_SUCCESS) {
+                continue;
+            }
+        } else {
+            cmd = "atcab_write_enc";
+            status = atcab_write_enc(slot_id, offset, key, writekey, key_id);
+            if (status != ATCA_SUCCESS) {
+                continue;
+            }
         }
-    } else {
-        status = atcab_write_enc(slot_id, offset, key, writekey, key_id);
-        if (status != ATCA_SUCCESS) {
-            eprintf("Command atcab_write_enc is failed with status 0x%x\n", status);
-            return 2;
-        }
+    } while (should_retry(status));
+
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command %s is failed with status 0x%x\n", cmd, status);
+        return 2;
     }
 
     return 0;

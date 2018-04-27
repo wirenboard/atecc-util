@@ -76,3 +76,49 @@ int sha256_file(const char *filename, uint8_t *output)
     maybe_fclose(input);
     return 0;
 }
+
+static int __retry_counter;
+
+static int error_safe(ATCA_STATUS status)
+{
+    switch (status)
+    {
+        case ATCA_CONFIG_ZONE_LOCKED:
+        case ATCA_DATA_ZONE_LOCKED:
+        case ATCA_CHECKMAC_VERIFY_FAILED:
+        case ATCA_PARSE_ERROR:
+        case ATCA_FUNC_FAIL:
+        case ATCA_GEN_FAIL:
+        case ATCA_BAD_PARAM:
+        case ATCA_INVALID_ID:
+        case ATCA_INVALID_SIZE:
+        case ATCA_TOO_MANY_COMM_RETRIES:
+        case ATCA_SMALL_BUFFER:
+        case ATCA_BAD_OPCODE:
+        case ATCA_WAKE_SUCCESS:
+        case ATCA_EXECUTION_ERROR:
+        case ATCA_UNIMPLEMENTED:
+        case ATCA_ASSERT_FAILURE:
+        case ATCA_NOT_LOCKED:
+        case ATCA_NO_DEVICES:
+            return 0;
+        default:
+            return 1;
+    }
+}
+
+int should_retry(ATCA_STATUS status)
+{
+    if (error_safe(status) && __retry_counter > 0) {
+        __retry_counter--;
+        eprintf("Attempts left: %d\n", __retry_counter + 1);
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+void retry_counter_reset(int value)
+{
+    __retry_counter = value;
+}

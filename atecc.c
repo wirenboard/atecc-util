@@ -11,6 +11,7 @@
 
 #include "config.h"
 #include "helpers.h"
+#include "util.h"
 
 #include "atecc-init.h"
 #include "atecc-config.h"
@@ -29,6 +30,8 @@
 #else
 #define WITH_OPENSSL ""
 #endif
+
+#define DEFAULT_RETRIES 3
 
 struct atecc_cmd {
     const char *name;
@@ -106,6 +109,7 @@ void print_help(const char *argv0, const char *cmd_name)
         eprintf("\t-s <i2c slave ID>\n\t\tI2C slave ID of ATECC. Default is 0x%x\n", DEFAULT_I2C_SLAVE);
         eprintf("\t-c \"cmd [arg1 [arg2 ...]]\"\n\t\tCommand and its arguments.\n");
         eprintf("\t-h[cmd_name]\n\t\tPrint this help message or help message of specific command.\n");
+        eprintf("\t-r <num_retries>\n\t\tMax number of retries for some commands. Default is %d\n", DEFAULT_RETRIES);
         eprintf("\t-v\tPrint version and exit\n\n");
 
         eprintf("Available commands:\n");
@@ -120,12 +124,13 @@ int main(int argc, char *argv[])
     char *cmds[MAX_CMDS];
     int num_cmds = 0;
     int ret = 0;
+    int num_retries = DEFAULT_RETRIES;
 
     ATCAIfaceCfg cfg = cfg_ateccx08a_i2c_default;
     cfg.atcai2c.bus = DEFAULT_I2C_BUS;
     cfg.atcai2c.slave_address = DEFAULT_I2C_SLAVE;
 
-    while ((c = getopt(argc, argv, "h::c:b:s:v")) != -1) {
+    while ((c = getopt(argc, argv, "h::c:b:s:vr:")) != -1) {
         switch (c) {
         case 'v':
             print_version();
@@ -144,6 +149,9 @@ int main(int argc, char *argv[])
             break;
         case 's':
             cfg.atcai2c.slave_address = atoi(optarg);
+            break;
+        case 'r':
+            num_retries = atoi(optarg);
             break;
         default:
             eprintf("Unknown option: %c\n", c);
@@ -179,6 +187,9 @@ int main(int argc, char *argv[])
                 wordfree(&p);
                 goto _exit;
             }
+
+            /* reset retry counter for each new command */
+            retry_counter_reset(num_retries);
 
             if (strcmp(cmdlist->name, p.we_wordv[0]) == 0) {
                 ret = cmdlist->callback(p.we_wordc, p.we_wordv);
