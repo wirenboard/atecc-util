@@ -88,7 +88,6 @@ static int error_safe(ATCA_STATUS status)
         case ATCA_CHECKMAC_VERIFY_FAILED:
         case ATCA_PARSE_ERROR:
         case ATCA_FUNC_FAIL:
-        case ATCA_GEN_FAIL:
         case ATCA_BAD_PARAM:
         case ATCA_INVALID_ID:
         case ATCA_INVALID_SIZE:
