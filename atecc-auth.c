@@ -133,7 +133,7 @@ int do_atecc_auth_passwd(int argc, char **argv)
     /* check MAC */
     status = atcab_checkmac(1, slot_id, NULL, resp, other_data);
     if (status == ATCA_CHECKMAC_VERIFY_FAILED) {
-        eprintf("Wrong password\n");
+        eprintf("Authentication failure\n");
         return 1;
     }
     if (status != ATCA_SUCCESS) {
