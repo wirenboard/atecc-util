@@ -87,7 +87,7 @@ void print_version(void)
     eprintf("atecc-util " VERSION WITH_OPENSSL ", build " __DATE__ " " __TIME__ "\n");
 }
 
-void print_help(const char *argv0, const char *cmd_name)
+int print_help(const char *argv0, const char *cmd_name)
 {
     if (cmd_name != NULL) {
         struct atecc_cmd *cmds = commands;
@@ -98,12 +98,13 @@ void print_help(const char *argv0, const char *cmd_name)
                 } else {
                     eprintf("There's no help for command %s\n", cmds->name);
                 }
-                return;
+                return 0;
             }
             cmds++;
         }
         eprintf("Unknown command: %s\nAvailable commands:\n", cmd_name);
         print_available_cmds();
+        return 1;
     } else {
         print_version();
         eprintf("Usage: %s [-bshv] -c \"cmd1 cmd1_args\" [-c \"cmd2 cmd2_args\"]\n\n", argv0);
@@ -117,6 +118,7 @@ void print_help(const char *argv0, const char *cmd_name)
 
         eprintf("Available commands:\n");
         print_available_cmds();
+        return 0;
     }
 }
 
@@ -140,8 +142,7 @@ int main(int argc, char *argv[])
             return 0;
             break;
         case 'h':
-            print_help(argv0, optarg);
-            return 0;
+            return print_help(argv0, optarg);
             break;
         case 'c':
             assert(num_cmds != MAX_CMDS);
