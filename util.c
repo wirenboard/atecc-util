@@ -6,21 +6,13 @@
 
 #include "helpers.h"
 
-#if !defined(USE_ATECC_SHA256) && !defined(USE_OPENSSL_SHA256)
-#warning "No SHA256 calculation method defined, use ATECC by default"
-#define USE_ATECC_SHA256
-#endif
-
-#if defined(USE_OPENSSL_SHA256)
-#include <openssl/sha.h>
-#elif defined(USE_ATECC_SHA256)
-#include "basic/atca_basic.h"
-#endif
+#include "crypto/atca_crypto_sw.h"
 
 #define BUFFER_SIZE 256
 
 int sha256_file(const char *filename, uint8_t *output)
 {
+    ATCA_STATUS status;
     uint8_t buffer[BUFFER_SIZE];
     FILE *input = maybe_fopen(filename, "rb");
     if (!input) {
@@ -28,19 +20,13 @@ int sha256_file(const char *filename, uint8_t *output)
         return 1;
     }
 
-#if defined(USE_OPENSSL_SHA256)
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-#elif defined(USE_ATECC_SHA256)
-    ATCA_STATUS status;
-    atca_sha256_ctx_t sha256;
-    status = atcab_hw_sha2_256_init(&sha256);
+    atcac_sha2_256_ctx ctx;
+    status = atcac_sw_sha2_256_init(&ctx);
     if (status != ATCA_SUCCESS) {
-        eprintf("Command atcab_hw_sha2_256_init is failed with status 0x%x\n", status);
+        eprintf("Command atcac_sw_sha2_256_init is failed with status 0x%x\n", status);
         maybe_fclose(input);
         return 2;
     }
-#endif
 
     while (!feof(input)) {
         size_t bytesRead = fread(buffer, 1, sizeof (buffer), input);
@@ -50,28 +36,20 @@ int sha256_file(const char *filename, uint8_t *output)
             return 1;
         }
 
-#if defined(USE_OPENSSL_SHA256)
-        SHA256_Update(&sha256, buffer, bytesRead);
-#elif defined(USE_ATECC_SHA256)
-        status = atcab_hw_sha2_256_update(&sha256, buffer, bytesRead);
+        status = atcac_sw_sha2_256_update(&ctx, buffer, bytesRead);
         if (status != ATCA_SUCCESS) {
-            eprintf("Command atcab_hw_sha2_256_update is failed with status 0x%x\n", status);
+            eprintf("Command atcac_sw_sha2_256_update is failed with status 0x%x\n", status);
             maybe_fclose(input);
             return 2;
         }
-#endif
     }
 
-#if defined(USE_OPENSSL_SHA256)
-    SHA256_Final(output, &sha256);
-#elif defined(USE_ATECC_SHA256)
-    status = atcab_hw_sha2_256_finish(&sha256, output);
+    status = atcac_sw_sha2_256_finish(&ctx, output);
     if (status != ATCA_SUCCESS) {
-        eprintf("Command atcab_hw_sha2_256_finish is failed with status 0x%x\n", status);
+        eprintf("Command atcac_sw_sha2_256_finish is failed with status 0x%x\n", status);
         maybe_fclose(input);
         return 2;
     }
-#endif
 
     maybe_fclose(input);
     return 0;

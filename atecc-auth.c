@@ -4,6 +4,7 @@
 #include "util.h"
 #include "basic/atca_basic.h"
 #include "host/atca_host.h"
+#include "crypto/atca_crypto_sw.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +45,7 @@ static int make_key_from_password(const char *password, uint8_t key[ATCA_KEY_SIZ
     strcpy((char *) buffer, password);
     strcpy((char *) buffer + strlen(password), PASSWD_SALT);
 
-    if (sha256_buffer((const uint8_t *) buffer, strlen((char *) buffer), key) != 0) {
+    if (atcac_sw_sha2_256((const uint8_t *) buffer, strlen((char *) buffer), key) != 0) {
         return 0;
     }
 
