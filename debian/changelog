@@ -1,3 +1,11 @@
+atecc-util (0.4) stable; urgency=medium
+
+  * remove dependency from OpenSSL
+  * password authentication support
+  * ECDH support
+
+ -- Nikita Maslov <n.maslov@contactless.ru>  Sat, 28 Apr 2018 15:30:38 +0300
+
 atecc-util (0.3) stable; urgency=medium
 
   * add counter utils (read, init, increment)
