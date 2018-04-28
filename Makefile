@@ -20,6 +20,7 @@ OBJS=atecc.o \
 	 atecc-data.o \
 	 atecc-counter.o \
 	 atecc-ecdh.o \
+	 atecc-auth.o \
 	 helpers.o \
 	 util.o \
 	 ../helpers/atecc_config_zone.o

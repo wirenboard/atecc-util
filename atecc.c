@@ -20,6 +20,7 @@
 #include "atecc-data.h"
 #include "atecc-counter.h"
 #include "atecc-ecdh.h"
+#include "atecc-auth.h"
 
 #ifndef VERSION
 #define VERSION "(unknown version)"
@@ -67,6 +68,8 @@ struct atecc_cmd commands[] = {
     {"extra-set", do_atecc_extra_set, atecc_extra_set_help},
     {"extra-get", do_atecc_extra_get, atecc_extra_get_help},
     {"ecdh", do_atecc_ecdh, atecc_ecdh_help},
+    {"auth-passwd", do_atecc_auth_passwd, atecc_auth_passwd_help},
+    {"auth-make-passwd", do_atecc_auth_make_passwd, atecc_auth_make_passwd_help},
     { NULL, NULL, NULL }
 };
 
