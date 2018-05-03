@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "helpers.h"
+#include "util.h"
 #include "basic/atca_basic.h"
 
 int do_atecc_write_data(int argc, char **argv)
@@ -147,8 +148,11 @@ int do_atecc_read_data(int argc, char **argv)
             return 1;
         }
 
-        status = atcab_read_enc(slot_id, offset, outputbuffer,
-                readkey, readkey_slot);
+        do {
+            status = atcab_read_enc(slot_id, offset, outputbuffer,
+                    readkey, readkey_slot);
+        } while (should_retry(status));
+
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_read_enc is failed with status 0x%x\n",
                     status);
@@ -162,8 +166,11 @@ int do_atecc_read_data(int argc, char **argv)
             return 1;
         }
 
-        status = atcab_read_bytes_zone(ATCA_ZONE_DATA, slot_id, offset,
-                    outputbuffer, outputsize);
+        do {
+            status = atcab_read_bytes_zone(ATCA_ZONE_DATA, slot_id, offset,
+                        outputbuffer, outputsize);
+        } while (should_retry(status));
+
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_read_bytes_zone is failed with status 0x%x\n",
                     status);
