@@ -86,7 +86,7 @@ static int error_safe(ATCA_STATUS status)
 
 int should_retry(ATCA_STATUS status)
 {
-    if (error_safe(status) && __retry_counter > 0) {
+    if (status != ATCA_SUCCESS && error_safe(status) && __retry_counter > 0) {
         __retry_counter--;
         eprintf("Attempts left: %d\n", __retry_counter + 1);
         return 1;
