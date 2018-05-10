@@ -70,6 +70,7 @@ struct atecc_cmd commands[] = {
     {"ecdh", do_atecc_ecdh, atecc_ecdh_help},
     {"auth-passwd", do_atecc_auth_passwd, atecc_auth_passwd_help},
     {"auth-make-passwd", do_atecc_auth_make_passwd, atecc_auth_make_passwd_help},
+    {"auth-check-gendig", do_atecc_auth_check_gendig, atecc_auth_check_gendig_help},
     { NULL, NULL, NULL }
 };
 
