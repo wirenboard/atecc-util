@@ -243,103 +243,109 @@ int do_atecc_auth_check_gendig(int argc, char **argv)
     uint8_t resp[32];
     uint8_t challenge[32];
 
-    if ((status = atcab_random(challenge)) != ATCA_SUCCESS)
-    {
-        eprintf("Command atcab_random is failed with status 0x%x\n", status);
-        return 2;
-    }
+    do {
+        if ((status = atcab_random(challenge)) != ATCA_SUCCESS)
+        {
+            eprintf("Command atcab_random is failed with status 0x%x\n", status);
+            continue;
+        }
 
 
-    // Read the device SN
-    if ((status = atcab_read_zone(ATCA_ZONE_CONFIG, 0, 0, 0, serial_num, 32)) != ATCA_SUCCESS)
-    {
-        eprintf("Command atcab_read_zone is failed with status 0x%x\n", status);
-        return 2;
-    }
-    // Make the SN continuous by moving SN[4:8] right after SN[0:3]
-    memmove(&serial_num[4], &serial_num[8], 5);
+        // Read the device SN
+        if ((status = atcab_read_zone(ATCA_ZONE_CONFIG, 0, 0, 0, serial_num, 32)) != ATCA_SUCCESS)
+        {
+            eprintf("Command atcab_read_zone is failed with status 0x%x\n", status);
+            continue;
+        }
+        // Make the SN continuous by moving SN[4:8] right after SN[0:3]
+        memmove(&serial_num[4], &serial_num[8], 5);
 
-    // Random Nonce inputs
-    memset(&temp_key, 0, sizeof(temp_key));
-    memset(&nonce_params, 0, sizeof(nonce_params));
-    nonce_params.mode = NONCE_MODE_SEED_UPDATE;
-    nonce_params.zero = 0;
-    nonce_params.num_in = (uint8_t*)&num_in;
-    nonce_params.rand_out = (uint8_t*)&rand_out;
-    nonce_params.temp_key = &temp_key;
+        // Random Nonce inputs
+        memset(&temp_key, 0, sizeof(temp_key));
+        memset(&nonce_params, 0, sizeof(nonce_params));
+        nonce_params.mode = NONCE_MODE_SEED_UPDATE;
+        nonce_params.zero = 0;
+        nonce_params.num_in = (uint8_t*)&num_in;
+        nonce_params.rand_out = (uint8_t*)&rand_out;
+        nonce_params.temp_key = &temp_key;
 
-    // Send the random Nonce command
-    if ((status = atcab_nonce_rand(num_in, rand_out)) != ATCA_SUCCESS)
-    {
-        eprintf("Command atcab_nonce_rand is failed with status 0x%x\n", status);
-        return 2;
-    }
+        // Send the random Nonce command
+        if ((status = atcab_nonce_rand(num_in, rand_out)) != ATCA_SUCCESS)
+        {
+            eprintf("Command atcab_nonce_rand is failed with status 0x%x\n", status);
+            continue;
+        }
 
-    // Calculate Tempkey
-    if ((status = atcah_nonce(&nonce_params)) != ATCA_SUCCESS)
-    {
-        eprintf("Command atcah_nonce is failed with status 0x%x\n", status);
-        return 2;
-    }
+        // Calculate Tempkey
+        if ((status = atcah_nonce(&nonce_params)) != ATCA_SUCCESS)
+        {
+            eprintf("Command atcah_nonce is failed with status 0x%x\n", status);
+            continue;
+        }
 
-    // Supply OtherData so GenDig behavior is the same for keys with SlotConfig.NoMac set
-    other_data[0] = ATCA_GENDIG;
-    other_data[1] = GENDIG_ZONE_DATA;
-    other_data[2] = (uint8_t)(gendig_slot);
-    other_data[3] = (uint8_t)(gendig_slot >> 8);
+        // Supply OtherData so GenDig behavior is the same for keys with SlotConfig.NoMac set
+        other_data[0] = ATCA_GENDIG;
+        other_data[1] = GENDIG_ZONE_DATA;
+        other_data[2] = (uint8_t)(gendig_slot);
+        other_data[3] = (uint8_t)(gendig_slot >> 8);
 
-    // Send the GenDig command
-    if ((status = atcab_gendig(GENDIG_ZONE_DATA, gendig_slot, other_data, sizeof(other_data))) != ATCA_SUCCESS)
-    {
-        eprintf("Command atcab_gendig is failed with status 0x%x\n", status);
-        return 2;
-    }
+        // Send the GenDig command
+        if ((status = atcab_gendig(GENDIG_ZONE_DATA, gendig_slot, other_data, sizeof(other_data))) != ATCA_SUCCESS)
+        {
+            eprintf("Command atcab_gendig is failed with status 0x%x\n", status);
+            continue;
+        }
 
-    // Calculate Tempkey
-    // NoMac bit isn't being considered here on purpose to remove having to read SlotConfig.
-    // OtherData is built to get the same result regardless of the NoMac bit.
-    memset(&gen_dig_param, 0, sizeof(gen_dig_param));
-    gen_dig_param.key_id = gendig_slot;
-    gen_dig_param.is_key_nomac = false;
-    gen_dig_param.sn = serial_num;
-    gen_dig_param.stored_value = key;
-    gen_dig_param.zone = GENDIG_ZONE_DATA;
-    gen_dig_param.other_data = other_data;
-    gen_dig_param.temp_key = &temp_key;
-    if ((status = atcah_gen_dig(&gen_dig_param)) != ATCA_SUCCESS)
-    {
-        eprintf("Command atcah_gen_dig is failed with status 0x%x\n", status);
-        return 2;
-    }
+        // Calculate Tempkey
+        // NoMac bit isn't being considered here on purpose to remove having to read SlotConfig.
+        // OtherData is built to get the same result regardless of the NoMac bit.
+        memset(&gen_dig_param, 0, sizeof(gen_dig_param));
+        gen_dig_param.key_id = gendig_slot;
+        gen_dig_param.is_key_nomac = false;
+        gen_dig_param.sn = serial_num;
+        gen_dig_param.stored_value = key;
+        gen_dig_param.zone = GENDIG_ZONE_DATA;
+        gen_dig_param.other_data = other_data;
+        gen_dig_param.temp_key = &temp_key;
+        if ((status = atcah_gen_dig(&gen_dig_param)) != ATCA_SUCCESS)
+        {
+            eprintf("Command atcah_gen_dig is failed with status 0x%x\n", status);
+            continue;
+        }
 
-    // Now perform CheckMac to validate keys
-    struct atca_check_mac_in_out check_mac = {
-        .mode = 2,
-        .key_id = 0, // TempKey used
-        .sn = serial_num,
-        .client_chal = challenge,
-        .client_resp = resp,
-        .other_data = other_data,
-        .otp = NULL,
-        .slot_key = key,
-        .target_key = NULL,
-        .temp_key = &temp_key,
-    };
-    status = atcah_check_mac(&check_mac);
+        // Now perform CheckMac to validate keys
+        struct atca_check_mac_in_out check_mac = {
+            .mode = 2,
+            .key_id = 0, // TempKey used
+            .sn = serial_num,
+            .client_chal = challenge,
+            .client_resp = resp,
+            .other_data = other_data,
+            .otp = NULL,
+            .slot_key = key,
+            .target_key = NULL,
+            .temp_key = &temp_key,
+        };
+        status = atcah_check_mac(&check_mac);
+        if (status != ATCA_SUCCESS) {
+            eprintf("Command atcah_check_mac is failed with status 0x%x\n", status);
+            continue;
+        }
+
+        /* check MAC */
+        status = atcab_checkmac(2, 0, challenge, resp, other_data);
+        if (status == ATCA_CHECKMAC_VERIFY_FAILED) {
+            eprintf("Keys doesn't match\n");
+            return 1;
+        }
+        if (status != ATCA_SUCCESS) {
+            eprintf("Command atcab_checkmac is failed with status 0x%x\n",
+                    status);
+            continue;
+        }
+    } while (should_retry(status));
+
     if (status != ATCA_SUCCESS) {
-        eprintf("Command atcah_check_mac is failed with status 0x%x\n", status);
-        return 2;
-    }
-
-    /* check MAC */
-    status = atcab_checkmac(2, 0, challenge, resp, other_data);
-    if (status == ATCA_CHECKMAC_VERIFY_FAILED) {
-        eprintf("Keys doesn't match\n");
-        return 1;
-    }
-    if (status != ATCA_SUCCESS) {
-        eprintf("Command atcab_checkmac is failed with status 0x%x\n",
-                status);
         return 2;
     }
 
