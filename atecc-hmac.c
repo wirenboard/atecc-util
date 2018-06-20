@@ -122,12 +122,13 @@ int do_atecc_hmac_dgst(int argc, char **argv)
     /* send payload to ATECC */
     do {
         status = atcab_sha_hmac_init(&ctx, slot_id);
-        if (status != ATCA_SUCCESS) {
-            eprintf("Command atcab_sha_hmac_init is failed with status 0x%x\n", status);
-            maybe_fclose(payloadfile);
-            return 2;
-        }
     } while (should_retry(status));
+
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_sha_hmac_init is failed with status 0x%x\n", status);
+        maybe_fclose(payloadfile);
+        return 2;
+    }
 
     while (!feof(payloadfile)) {
         size_t sz;
