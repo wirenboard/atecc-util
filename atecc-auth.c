@@ -101,14 +101,14 @@ int do_atecc_auth_passwd(int argc, char **argv)
     uint8_t resp[32];
     ATCA_STATUS status;
 
-    status = atcab_read_serial_number(sn);
+    ATECC_RETRY(status, atcab_read_serial_number(sn));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_read_serial_number is failed with status 0x%x\n",
                 status);
         return 2;
     }
 
-    status = atcab_nonce_rand(num_in, rand_out);
+    ATECC_RETRY(status, atcab_nonce_rand(num_in, rand_out));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_nonce_rand is failed with status 0x%x\n",
                 status);
@@ -150,7 +150,7 @@ int do_atecc_auth_passwd(int argc, char **argv)
     }
 
     /* check MAC */
-    status = atcab_checkmac(1, slot_id, NULL, resp, other_data);
+    ATECC_RETRY(status, atcab_checkmac(1, slot_id, NULL, resp, other_data));
     if (status == ATCA_CHECKMAC_VERIFY_FAILED) {
         eprintf("Authentication failure\n");
         return 1;
@@ -198,7 +198,7 @@ int do_atecc_auth_make_passwd(int argc, char **argv)
 
     /* write key unencrypted */
     ATCA_STATUS status;
-    status = atcab_write_bytes_zone(ATCA_ZONE_DATA, slot_id, 0, key, ATCA_KEY_SIZE);
+    ATECC_RETRY(status, atcab_write_bytes_zone(ATCA_ZONE_DATA, slot_id, 0, key, ATCA_KEY_SIZE));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_write_bytes_zone is failed with status 0x%x\n",
                 status);

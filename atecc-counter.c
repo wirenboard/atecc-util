@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "util.h"
 #include "helpers.h"
 #include "basic/atca_basic.h"
 
@@ -28,7 +29,7 @@ int do_atecc_read_counter(int argc, char **argv)
     }
 
     if (counter_id <= 1) {
-        status = atcab_counter_read(counter_id, &value);
+        ATECC_RETRY(status, atcab_counter_read(counter_id, &value));
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_couter_read is failed with status 0x%x\n",
                     status);
@@ -94,7 +95,7 @@ int do_atecc_increase_counter(int argc, char **argv)
     uint32_t value = 0;
 
     if (counter_id <= 1) {
-        status = atcab_counter_increment(counter_id, &value);
+        ATECC_RETRY(status, atcab_counter_increment(counter_id, &value));
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_couter_increase is failed with status 0x%x\n",
                     status);
@@ -151,7 +152,7 @@ int do_atecc_init_counter(int argc, char **argv)
             value = COUNTER_MAX_VALUE - value;
         }
 
-        status = atcab_write_config_counter(counter_id, value);
+        ATECC_RETRY(status, atcab_write_config_counter(counter_id, value));
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_write_config_counter is failed "
                     "with status 0x%x\n", status);

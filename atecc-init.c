@@ -1,5 +1,6 @@
 #include "atecc-init.h"
 
+#include "util.h"
 #include "helpers.h"
 
 static int atecc_print_serial(FILE *output)
@@ -7,7 +8,7 @@ static int atecc_print_serial(FILE *output)
     ATCA_STATUS status;
     uint8_t sn[9];
 
-    status = atcab_read_serial_number(sn);
+    ATECC_RETRY(status, atcab_read_serial_number(sn));
     if(status != ATCA_SUCCESS) {
         printf("Command atcab_read_serial_number is failed with status %x\n", status);
         return 2;
@@ -22,7 +23,7 @@ ATCA_STATUS atecc_init(ATCAIfaceCfg *cfg)
 {
     ATCA_STATUS status;
 
-    status = atcab_init(cfg);
+    ATECC_RETRY(status, atcab_init(cfg));
     if(status != ATCA_SUCCESS) {
         eprintf("Command atcab_init is failed with status %x\n", status);
         return status;

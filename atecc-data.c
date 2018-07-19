@@ -30,7 +30,7 @@ int do_atecc_write_data(int argc, char **argv)
     }
 
     /* get size of specific slot */
-    status = atcab_get_zone_size(ATCA_ZONE_DATA, slot_id, &slotsize);
+    ATECC_RETRY(status, atcab_get_zone_size(ATCA_ZONE_DATA, slot_id, &slotsize));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_get_zone_size is failed with status 0x%x\n",
                 status);
@@ -148,10 +148,8 @@ int do_atecc_read_data(int argc, char **argv)
             return 1;
         }
 
-        do {
-            status = atcab_read_enc(slot_id, offset, outputbuffer,
-                    readkey, readkey_slot);
-        } while (should_retry(status));
+        ATECC_RETRY(status, atcab_read_enc(slot_id, offset, outputbuffer,
+                    readkey, readkey_slot));
 
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_read_enc is failed with status 0x%x\n",
@@ -166,10 +164,8 @@ int do_atecc_read_data(int argc, char **argv)
             return 1;
         }
 
-        do {
-            status = atcab_read_bytes_zone(ATCA_ZONE_DATA, slot_id, offset,
-                        outputbuffer, outputsize);
-        } while (should_retry(status));
+        ATECC_RETRY(status, atcab_read_bytes_zone(ATCA_ZONE_DATA, slot_id, offset,
+                        outputbuffer, outputsize));
 
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_read_bytes_zone is failed with status 0x%x\n",
@@ -216,7 +212,7 @@ int do_atecc_lock_data(int argc, char **argv)
 
     ATCA_STATUS status;
 
-    status = atcab_lock_data_zone();
+    ATECC_RETRY(status, atcab_lock_data_zone());
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_lock_data_zone is failed with status 0x%x\n",
                 status);
@@ -240,7 +236,7 @@ int do_atecc_data_is_locked(int argc, char **argv)
     ATCA_STATUS status;
     bool state;
 
-    status = atcab_is_locked(LOCK_ZONE_DATA, &state);
+    ATECC_RETRY(status, atcab_is_locked(LOCK_ZONE_DATA, &state));
 
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_is_locked is failed with status 0x%x\n", status);
@@ -274,7 +270,7 @@ int do_atecc_slot_is_locked(int argc, char **argv)
     ATCA_STATUS status;
     bool state;
 
-    status = atcab_is_slot_locked(slot, &state);
+    ATECC_RETRY(status, atcab_is_slot_locked(slot, &state));
 
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_is_slot_locked is failed with status 0x%x\n", status);

@@ -26,7 +26,7 @@ int do_atecc_gen_private(int argc, char **argv)
         pubkeyfilename = argv[2];
     }
 
-    status = atcab_genkey(key_id, pubkey);
+    ATECC_RETRY(status, atcab_genkey(key_id, pubkey));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_genkey is failed with status 0x%x\n", status);
         if (pubkeyfile) {
@@ -118,7 +118,7 @@ int do_atecc_write_private(int argc, char **argv)
 
     maybe_fclose(privatekeyfile);
 
-    status = atcab_priv_write(key_id, privatekey, writekey_id, writekey);
+    ATECC_RETRY(status, atcab_priv_write(key_id, privatekey, writekey_id, writekey));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_priv_write is failed with status 0x%x\n", status);
         return 2;
@@ -154,7 +154,7 @@ int do_atecc_read_pub(int argc, char **argv)
         return 1;
     }
 
-    status = atcab_read_pubkey(slot_id, buffer);
+    ATECC_RETRY(status, atcab_read_pubkey(slot_id, buffer));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_read_pubkey is failed with status 0x%x\n", status);
         maybe_fclose(pubkey);
@@ -199,7 +199,7 @@ int do_atecc_gen_pub(int argc, char **argv)
         return 1;
     }
 
-    status = atcab_get_pubkey(slot_id, buffer);
+    ATECC_RETRY(status, atcab_get_pubkey(slot_id, buffer));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_get_pubkey is failed with status 0x%x\n", status);
         maybe_fclose(pubkey);
@@ -246,7 +246,7 @@ int do_atecc_sign(int argc, char **argv)
         return sha_status;
     }
 
-    status = atcab_sign(slot_id, digest, signature);
+    ATECC_RETRY(status, atcab_sign(slot_id, digest, signature));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_sign is failed with status 0x%x\n", status);
         return 2;
@@ -336,14 +336,14 @@ int do_atecc_verify(int argc, char **argv)
     maybe_fclose(signaturefile);
 
     if (!pubkeyfilename) {
-        status = atcab_verify_stored(digest, signature, slot_id, &verified);
+        ATECC_RETRY(status, atcab_verify_stored(digest, signature, slot_id, &verified));
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_verify_stored is failed with status 0x%x\n",
                     status);
             return 2;
         }
     } else {
-        status = atcab_verify_extern(digest, signature, pubkey, &verified);
+        ATECC_RETRY(status, atcab_verify_extern(digest, signature, pubkey, &verified));
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_verify_extern is failed with status 0x%x\n",
                     status);

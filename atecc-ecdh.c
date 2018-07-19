@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "util.h"
 #include "basic/atca_basic.h"
 
 int do_atecc_ecdh(int argc, char **argv)
@@ -34,7 +35,7 @@ int do_atecc_ecdh(int argc, char **argv)
 
     maybe_fclose(pubkeyfile);
 
-    status = atcab_ecdh(slot_id, pubkey, pms);
+    ATECC_RETRY(status, atcab_ecdh(slot_id, pubkey, pms));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_ecdh is failed with status 0x%x\n", status);
         return 2;

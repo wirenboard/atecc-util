@@ -62,25 +62,20 @@ int do_atecc_hmac_write_key(int argc, char **argv)
 
     ATCA_STATUS status;
     const char *cmd;
-    do {
-        if (!writekeyfilename) {
-            cmd = "atcab_write_zone";
-            status = atcab_write_zone(ATCA_ZONE_DATA, slot_id, offset, 0, key, 32);
-            if (status != ATCA_SUCCESS) {
-                continue;
-            }
-        } else {
-            cmd = "atcab_write_enc";
-            status = atcab_write_enc(slot_id, offset, key, writekey, key_id);
-            if (status != ATCA_SUCCESS) {
-                continue;
-            }
+    if (!writekeyfilename) {
+        cmd = "atcab_write_zone";
+        ATECC_RETRY(status, atcab_write_zone(ATCA_ZONE_DATA, slot_id, offset, 0, key, 32));
+        if (status != ATCA_SUCCESS) {
+            eprintf("Command %s is failed with status 0x%x\n", cmd, status);
+            return 2;
         }
-    } while (should_retry(status));
-
-    if (status != ATCA_SUCCESS) {
-        eprintf("Command %s is failed with status 0x%x\n", cmd, status);
-        return 2;
+    } else {
+        cmd = "atcab_write_enc";
+        ATECC_RETRY(status, atcab_write_enc(slot_id, offset, key, writekey, key_id));
+        if (status != ATCA_SUCCESS) {
+            eprintf("Command %s is failed with status 0x%x\n", cmd, status);
+            return 2;
+        }
     }
 
     return 0;
@@ -120,10 +115,7 @@ int do_atecc_hmac_dgst(int argc, char **argv)
     }
 
     /* send payload to ATECC */
-    do {
-        status = atcab_sha_hmac_init(&ctx, slot_id);
-    } while (should_retry(status));
-
+    ATECC_RETRY(status, atcab_sha_hmac_init(&ctx, slot_id));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_sha_hmac_init is failed with status 0x%x\n", status);
         maybe_fclose(payloadfile);
@@ -142,7 +134,7 @@ int do_atecc_hmac_dgst(int argc, char **argv)
             }
         }
 
-        status = atcab_sha_hmac_update(&ctx, buffer, sz);
+        ATECC_RETRY(status, atcab_sha_hmac_update(&ctx, buffer, sz));
         if (status != ATCA_SUCCESS) {
             eprintf("Command atcab_sha_hmac_update is failed with status 0x%x\n", status);
             return status;
@@ -150,7 +142,7 @@ int do_atecc_hmac_dgst(int argc, char **argv)
     }
     maybe_fclose(payloadfile);
 
-    status = atcab_sha_hmac_finish(&ctx, hmac, SHA_MODE_TARGET_TEMPKEY);
+    ATECC_RETRY(status, atcab_sha_hmac_finish(&ctx, hmac, SHA_MODE_TARGET_TEMPKEY));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_sha_hmac_finish is failed with status %d\n", status);
         return status;
