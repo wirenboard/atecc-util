@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "helpers.h"
 #include "util.h"
@@ -118,7 +119,13 @@ int do_atecc_write_private(int argc, char **argv)
 
     maybe_fclose(privatekeyfile);
 
-    ATECC_RETRY(status, atcab_priv_write(key_id, privatekey, writekey_id, writekey));
+    // atcab_priv_write expects 36 bytes total with four leading zero bytes
+    assert (ATCA_PRIV_KEY_SIZE == 32);
+    uint8_t privatekey_payload[ATCA_PRIV_KEY_SIZE + 4] = {};
+    memset(privatekey_payload, 0x00, 4);
+    memcpy(privatekey_payload + 4, privatekey, sizeof(privatekey));
+
+    ATECC_RETRY(status, atcab_priv_write(key_id, privatekey_payload, writekey_id, writekey));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_priv_write is failed with status 0x%x\n", status);
         return 2;
@@ -132,6 +139,7 @@ void atecc_write_private_help(const char *cmdname)
     eprintf("Usage: %s <slot_id> private_key_file "
             "[<write_key_slot> write_key_file]\n", cmdname);
     eprintf("Writes an ECDSA private key in given slot.\n");
+    eprintf("Private key is 32 bytes in length, without 4 leading zeroes.\n");
     eprintf("If data section is locked, you also need to "
             "determine write key.\n");
 }
