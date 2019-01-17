@@ -1,3 +1,9 @@
+atecc-util (0.4.2) stable; urgency=medium
+
+  * retry on ATCA_WAKE_SUCCESS error
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 17 Jan 2019 10:46:09 +0300
+
 atecc-util (0.4.1) stable; urgency=medium
 
   * fixes ecc-write command (4 first bytes of private key were lost)

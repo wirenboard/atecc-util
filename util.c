@@ -72,7 +72,6 @@ static int error_safe(ATCA_STATUS status)
         case ATCA_TOO_MANY_COMM_RETRIES:
         case ATCA_SMALL_BUFFER:
         case ATCA_BAD_OPCODE:
-        case ATCA_WAKE_SUCCESS:
         case ATCA_EXECUTION_ERROR:
         case ATCA_UNIMPLEMENTED:
         case ATCA_ASSERT_FAILURE:
