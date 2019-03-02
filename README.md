@@ -20,7 +20,7 @@ atecc-util consists of set of distinct tools called commands. Each command have 
 
 Multiple commands can be specified at once as following:
 
-    atecc-util -b 10 -c 'serial' -c 'read-config /tmp/config.dump'
+    atecc -b 10 -c 'serial' -c 'read-config /tmp/config.dump'
 
 ## Installation
 
@@ -55,7 +55,7 @@ You can build Debian package as usual:
 
 Reads ATECCx08 IC serial number in hex format:
 ```
-$ ./atecc-util -b 10 -c 'serial'
+$ ./atecc -b 10 -c 'serial'
 012355b52d66a109ee
 ```
 
