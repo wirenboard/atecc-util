@@ -46,7 +46,7 @@ CFLAGS += $(addprefix -I, $(INCLUDE) $(TEST_INCLUDE)) $(addprefix -D,$(OPTIONS))
 # Regardless of platform set the vpath correctly
 vpath %.c $(call BACK2SLASH,$(sort $(dir $(SOURCES) $(TEST_SOURCES))))
 
-TARGET=atecc-util
+TARGET=atecc
 OBJS=atecc.o \
 	 atecc-init.o \
 	 atecc-config.o \
