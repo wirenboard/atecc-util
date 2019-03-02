@@ -3,3 +3,6 @@ atecc
 .*.swp
 *.txt
 *.bin
+debian/.debhelper/
+debian/atecc-utils/
+debian/
