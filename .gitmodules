@@ -1,0 +1,3 @@
+[submodule "cryptoauthlib"]
+	path = cryptoauthlib
+	url = git://github.com/contactless/cryptoauthlib.git
