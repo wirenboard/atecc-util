@@ -71,6 +71,7 @@ struct atecc_cmd commands[] = {
     {"auth-passwd", do_atecc_auth_passwd, atecc_auth_passwd_help},
     {"auth-make-passwd", do_atecc_auth_make_passwd, atecc_auth_make_passwd_help},
     {"auth-check-gendig", do_atecc_auth_check_gendig, atecc_auth_check_gendig_help},
+    {"info", do_atecc_print_info, NULL},
     { NULL, NULL, NULL }
 };
 
@@ -113,7 +114,6 @@ int print_help(const char *argv0, const char *cmd_name)
         eprintf("\t-b <i2c bus ID>\n\t\tI2C bus ID ATECC is connected to. Default is %d\n", DEFAULT_I2C_BUS);
         eprintf("\t-s <i2c slave ID>\n\t\tI2C slave ID of ATECC. Default is 0x%x\n", DEFAULT_I2C_SLAVE);
         eprintf("\t-c \"cmd [arg1 [arg2 ...]]\"\n\t\tCommand and its arguments.\n");
-        eprintf("\t-d\tDiscover ATECC device type.\n");
         eprintf("\t-h[cmd_name]\n\t\tPrint this help message or help message of specific command.\n");
         eprintf("\t-r <num_retries>\n\t\tMax number of retries for some commands. Default is %d\n", DEFAULT_RETRIES);
         eprintf("\t-v\tPrint version and exit\n\n");
@@ -121,25 +121,6 @@ int print_help(const char *argv0, const char *cmd_name)
         eprintf("Available commands:\n");
         print_available_cmds();
         return 0;
-    }
-}
-
-static void discover_device(ATCAIfaceCfg* cfg)
-{
-    const char *devname[] = { "ATSHA204A", "ATECC108A", "ATECC508A", "ATECC608A" };  // indexed by ATCADeviceType
-
-    if (atcab_discover_device_type(cfg) == ATCA_SUCCESS) {
-        if (cfg->devtype == ATCA_DEV_UNKNOWN) {
-            printf("Found unknown CryptoAuth device ");
-        } else {
-            printf("Found %s ", devname[cfg->devtype]);
-        }
-        if (cfg->iface_type == ATCA_I2C_IFACE) {
-            printf("@ /dev/i2c-%d addr %02x", cfg->atcai2c.bus, cfg->atcai2c.slave_address);
-        }
-        printf("\n");
-    } else {
-        printf("Nothing found\n");
     }
 }
 
@@ -151,13 +132,12 @@ int main(int argc, char *argv[])
     int num_cmds = 0;
     int ret = 0;
     int num_retries = DEFAULT_RETRIES;
-    bool discover = false;
 
     ATCAIfaceCfg cfg = cfg_ateccx08a_i2c_default;
     cfg.atcai2c.bus = DEFAULT_I2C_BUS;
     cfg.atcai2c.slave_address = DEFAULT_I2C_SLAVE;
 
-    while ((c = getopt(argc, argv, "h::c:b:s:vr:d")) != -1) {
+    while ((c = getopt(argc, argv, "h::c:b:s:vr:")) != -1) {
         switch (c) {
         case 'v':
             print_version();
@@ -179,19 +159,11 @@ int main(int argc, char *argv[])
         case 'r':
             num_retries = atoi(optarg);
             break;
-        case 'd':
-            discover = true;
-            break;
         default:
             eprintf("Unknown option: %c\n", c);
             print_help(argv0, NULL);
             exit(1);
         }
-    }
-
-    if (discover) {
-        discover_device(&cfg);
-        return 0;
     }
 
     if (num_cmds == 0) {
