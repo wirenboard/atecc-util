@@ -3,6 +3,11 @@
 #include "util.h"
 #include "helpers.h"
 
+struct atecc_type {
+    ATCADeviceType type;
+    const char *name;
+};
+
 static int atecc_print_serial(FILE *output)
 {
     ATCA_STATUS status;
@@ -46,7 +51,11 @@ int do_atecc_print_info(int argc, char **argv)
     (void) argv;
     ATCA_STATUS status;
     uint8_t revision[4];
-    const char *devname[] = { "ATSHA204A", "ATECC108A", "ATECC508A", "ATECC608A" };  // indexed by ATCADeviceType
+    const struct atecc_type types[] = 
+        { { ATSHA204A, "ATSHA204A" }, 
+          { ATECC108A, "ATECC108A" },
+          { ATECC508A, "ATECC508A" },
+          { ATECC608A, "ATECC608A" } };
 
     ATECC_RETRY(status, atcab_info(revision));
     if(status != ATCA_SUCCESS) {
@@ -55,12 +64,15 @@ int do_atecc_print_info(int argc, char **argv)
     }
 
     ATCADeviceType dt = atcab_device_type(revision);
-
-    if (dt == ATCA_DEV_UNKNOWN) {
-        printf("Found unknown CryptoAuth device \n");
-    } else {
-        printf("Found %s \n", devname[dt]);
+    const char* name = "unknown CryptoAuth device";
+    for ( size_t i=0; i < sizeof(types)/sizeof(struct atecc_type); ++i) {
+        if (types[i].type == dt) {
+            name = types[i].name;
+            break;
+        }
     }
+
+    printf("Found %s \n", name);
 
     return 0;
 }
