@@ -1,3 +1,9 @@
+atecc-util (0.4.3) stable; urgency=medium
+
+  * added -d option for device type discovery
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 24 Aug 2020 17:42:01 +0500
+
 atecc-util (0.4.2) stable; urgency=medium
 
   * retry on ATCA_WAKE_SUCCESS error
