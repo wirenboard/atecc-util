@@ -176,6 +176,17 @@ int main(int argc, char *argv[])
         exit(2);
     }
 
+    uint8_t revision[4];
+
+    ATECC_RETRY(ret, atcab_info(revision));
+    if(ret != ATCA_SUCCESS) {
+        eprintf("Command atcab_info is failed with status %x\n", ret);
+        return 2;
+    }
+
+    ATCADeviceType dt = atcab_device_type(revision);
+    cfg.devtype = dt;
+
     for (i = 0; i < num_cmds; i++) {
         wordexp_t p;
 
