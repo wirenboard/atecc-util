@@ -32,7 +32,7 @@
 #define WITH_OPENSSL ""
 #endif
 
-#define DEFAULT_RETRIES 3
+#define DEFAULT_RETRIES 10
 
 struct atecc_cmd {
     const char *name;
@@ -171,6 +171,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    retry_counter_reset(num_retries);
     /* init ATECC first */
     if (atecc_init(&cfg) != ATCA_SUCCESS) {
         exit(2);
