@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
     }
 
     ATCADeviceType dt = atcab_device_type(revision);
-    cfg.devtype = dt;
+    cfg.devtype = ATECC608A; //dt;
 
     for (i = 0; i < num_cmds; i++) {
         wordexp_t p;
