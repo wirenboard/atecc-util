@@ -1,3 +1,9 @@
+atecc-util (0.4.6) stable; urgency=medium
+
+  * add ATECC608B to the list of supported signatures
+
+ -- Evgeny Boger <boger@contactless.ru>  Tue, 07 Sep 2021 12:18:01 +0300
+
 atecc-util (0.4.5) stable; urgency=medium
 
   * increase default retries number to 10
