@@ -1,3 +1,9 @@
+atecc-util (1.0.0) stable; urgency=medium
+
+  * switch to upstream cryptoauthlib (using legacy API for now)
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Thu, 17 Feb 2022 18:18:58 +0300
+
 atecc-util (0.4.5) stable; urgency=medium
 
   * increase default retries number to 10
