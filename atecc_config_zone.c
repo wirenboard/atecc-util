@@ -1,5 +1,5 @@
 #include "atecc_config_zone.h"
-#include "atca_command.h"
+#include "cryptoauthlib.h"
 
 void dump_slot_config(uint16_t value) {
     printf("Decoding SlotConfig value = 0x%04X\n", value);

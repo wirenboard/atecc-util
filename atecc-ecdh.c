@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #include "util.h"
-#include "basic/atca_basic.h"
+#include "cryptoauthlib.h"
 
 int do_atecc_ecdh(int argc, char **argv)
 {

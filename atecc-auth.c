@@ -2,7 +2,7 @@
 
 #include "helpers.h"
 #include "util.h"
-#include "basic/atca_basic.h"
+#include "cryptoauthlib.h"
 #include "host/atca_host.h"
 #include "crypto/atca_crypto_sw.h"
 

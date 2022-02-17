@@ -8,7 +8,7 @@
 #include "helpers.h"
 #include "util.h"
 
-#include "basic/atca_basic.h"
+#include "cryptoauthlib.h"
 
 int do_atecc_gen_private(int argc, char **argv)
 {

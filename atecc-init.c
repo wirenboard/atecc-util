@@ -63,7 +63,7 @@ int do_atecc_print_info(int argc, char **argv)
         return 2;
     }
 
-    ATCADeviceType dt = atcab_device_type(revision);
+    ATCADeviceType dt = atcab_get_device_type();
     const char* name = "unknown CryptoAuth device";
     for ( size_t i=0; i < sizeof(types)/sizeof(struct atecc_type); ++i) {
         if (types[i].type == dt) {

@@ -5,7 +5,7 @@
 
 #include "helpers.h"
 #include "util.h"
-#include "basic/atca_basic.h"
+#include "cryptoauthlib.h"
 
 int do_atecc_write_data(int argc, char **argv)
 {
@@ -59,7 +59,7 @@ int do_atecc_write_data(int argc, char **argv)
     /* check input size */
     if (!feof(inputfile)) {
         eprintf("File doesn't fit in slot area: "
-                "slot size %lu\n", slotsize);
+                "slot size %lu\n", (unsigned long) slotsize);
         ret = 1;
         goto _exit;
     }

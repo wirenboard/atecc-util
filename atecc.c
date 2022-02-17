@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <wordexp.h>
 
-#include "basic/atca_basic.h"
+#include "cryptoauthlib.h"
 #include "atecc_config_zone.h"
 
 #include "config.h"
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
         return 2;
     }
 
-    ATCADeviceType dt = atcab_device_type(revision);
+    ATCADeviceType dt = atcab_get_device_type();
     cfg.devtype = dt;
 
     for (i = 0; i < num_cmds; i++) {

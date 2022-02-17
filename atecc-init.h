@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdio.h>
-#include "basic/atca_basic.h"
+#include "cryptoauthlib.h"
 
 ATCA_STATUS atecc_init(ATCAIfaceCfg *cfg);
 

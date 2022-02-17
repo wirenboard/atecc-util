@@ -10,8 +10,7 @@ ifdef DEB_HOST_GNU_TYPE
 CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)-
 endif
 
-LDFLAGS=
-OPTIONS := ATCAPRINTF
+LDFLAGS=-pthread
 
 CRYPTOAUTHDIR := cryptoauthlib
 
@@ -20,7 +19,7 @@ MKDIR = $(shell mkdir -p $(1) 2>/dev/null)
 
 # If the target wasn't specified assume the target is the build machine
 
-CFLAGS=-I$(abspath cryptoauthlib/lib) -std=gnu99 -O0 -Wall -g -fPIC
+CFLAGS=-I$(abspath cryptoauthlib/lib) -Iconfig -std=gnu99 -O0 -Wall -g -fPIC
 
 # Wildcard all the sources and headers
 SOURCES := $(call FIND,$(CRYPTOAUTHDIR)/lib,\*.c)
@@ -30,14 +29,16 @@ INCLUDE := $(sort $(dir $(call FIND, $(CRYPTOAUTHDIR)/lib, \*.h)))
 LIBCRYPTOAUTH_OBJECTS := $(filter-out $(abspath $(CRYPTOAUTHDIR)/lib/hal)/%, $(SOURCES))
 LIBCRYPTOAUTH_OBJECTS := $(filter-out $(abspath $(CRYPTOAUTHDIR)/lib/pkcs11)/%, $(LIBCRYPTOAUTH_OBJECTS))
 LIBCRYPTOAUTH_OBJECTS := $(filter-out $(abspath $(CRYPTOAUTHDIR)/lib/openssl)/%, $(LIBCRYPTOAUTH_OBJECTS))
+LIBCRYPTOAUTH_OBJECTS := $(filter-out $(abspath $(CRYPTOAUTHDIR)/lib/mbedtls)/%, $(LIBCRYPTOAUTH_OBJECTS))
+LIBCRYPTOAUTH_OBJECTS := $(filter-out $(abspath $(CRYPTOAUTHDIR)/lib/wolfssl)/%, $(LIBCRYPTOAUTH_OBJECTS))
+LIBCRYPTOAUTH_OBJECTS := $(filter-out $(abspath $(CRYPTOAUTHDIR)/lib/atcacert)/%, $(LIBCRYPTOAUTH_OBJECTS))
 LIBCRYPTOAUTH_OBJECTS += $(CRYPTOAUTHDIR)/lib/hal/atca_hal.c
 
 # General Linux Support
 HAL_PREFIX := hal_linux
-LIBCRYPTOAUTH_OBJECTS += $(CRYPTOAUTHDIR)/lib/hal/hal_linux_timer.c
 
 # Native I2C hardware/driver
-OPTIONS += ATCA_HAL_I2C
+LIBCRYPTOAUTH_OBJECTS += $(CRYPTOAUTHDIR)/lib/hal/$(addprefix $(HAL_PREFIX),.c)
 LIBCRYPTOAUTH_OBJECTS += $(CRYPTOAUTHDIR)/lib/hal/$(addprefix $(HAL_PREFIX),_i2c_userspace.c)
 
 LIBCRYPTOAUTH_OBJECTS := $(LIBCRYPTOAUTH_OBJECTS:.c=.o)

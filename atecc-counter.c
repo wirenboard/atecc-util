@@ -5,7 +5,7 @@
 
 #include "util.h"
 #include "helpers.h"
-#include "basic/atca_basic.h"
+#include "cryptoauthlib.h"
 
 #define COUNTER15_SIZE 16
 #define COUNTER15_MAX_VALUE (COUNTER15_SIZE * 8)

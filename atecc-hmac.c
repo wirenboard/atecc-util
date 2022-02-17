@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "basic/atca_basic.h"
+#include "cryptoauthlib.h"
 
 int do_atecc_hmac_write_key(int argc, char **argv)
 {

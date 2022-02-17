@@ -7,7 +7,7 @@
 
 #include "helpers.h"
 
-#include "basic/atca_basic.h"
+#include "cryptoauthlib.h"
 #include "atecc_config_zone.h"
 
 #define CONFIG_ZONE_SLOTLOCKED_OFFSET 88
@@ -27,7 +27,7 @@ void dump_config(uint8_t config_zone[ATCA_ECC_CONFIG_SIZE])
         if (i % 4 == 0) {
             printf("\n");
         }
-        printf("%03lu: %02X\t\t", i, config_zone[i]);
+        printf("%03lu: %02X\t\t", (unsigned long) i, config_zone[i]);
     }
     printf("\n");
 
@@ -55,7 +55,7 @@ void dump_config(uint8_t config_zone[ATCA_ECC_CONFIG_SIZE])
 
     printf("===== Slot configurations============\n");
     for (size_t slot = 0; slot < ATCA_KEY_COUNT; ++slot) {
-        printf("=========================  Slot: %lu   ================== \n", slot);
+        printf("=========================  Slot: %lu   ================== \n", (unsigned long) slot);
         dump_slot_config((config_zone[CONFIG_ZONE_SLOT_CONFIG_OFFSET + slot * 2 + 1] << 8) | config_zone[CONFIG_ZONE_SLOT_CONFIG_OFFSET + slot * 2]);
         printf("-------------\n");
         dump_key_config((config_zone[CONFIG_ZONE_KEY_CONFIG_OFFSET + slot * 2 + 1] << 8) | config_zone[CONFIG_ZONE_KEY_CONFIG_OFFSET + slot * 2]);
