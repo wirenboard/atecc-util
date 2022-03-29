@@ -1,2 +1,3 @@
 buildDebSbuild defaultTargets: 'wb5 wb6 host',
-               repos: ['release', 'devTools']
+               repos: ['release', 'devTools'],
+               more: 'garbage'
