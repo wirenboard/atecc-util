@@ -1,3 +1,11 @@
+atecc-util (0.4.7) stable; urgency=medium
+
+  * cryptoauthlib: handle 'Watchdog About to Expire' state properly
+    This fixes errors during long atecc-util operation (because of
+    long pipeline or slow I/O on stdin/stdout)
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Sat, 14 May 2022 22:27:40 +0300
+
 atecc-util (0.4.6) stable; urgency=medium
 
   * cryptoauthlib: add command result read retries
