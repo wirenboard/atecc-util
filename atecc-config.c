@@ -196,6 +196,16 @@ int do_atecc_write_config(int argc, char **argv)
         goto _wcexit;
     }
 
+    // Force send ATECC to idle mode, so watchdog won't be triggered
+    // in the middle of command execution.
+    // This may happen because of I/O in fread slow enough,
+    // it adds delay between ATECC init sequence in main() and this operation.
+    status = atcab_idle();
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
+        ret = 2;
+        goto _wcexit;
+    }
 
     bool is_locked;
     status = atcab_is_locked(ATCA_ZONE_CONFIG, &is_locked);

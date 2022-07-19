@@ -71,6 +71,16 @@ int do_atecc_write_data(int argc, char **argv)
         goto _exit;
     }
 
+    // Force send ATECC to idle mode, so watchdog won't be triggered
+    // in the middle of command execution.
+    // This may happen because of I/O in fread slow enough,
+    // it adds delay between ATECC init sequence in main() and this operation.
+    status = atcab_idle();
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
+        return 2;
+    }
+
     /* try to write data to chip */
     status = atcab_write_bytes_zone(ATCA_ZONE_DATA, slot_id, offset,
                 inputbuffer, inputsize);
@@ -137,6 +147,16 @@ int do_atecc_read_data(int argc, char **argv)
         }
 
         maybe_fclose(readkeyfile);
+    }
+
+    // Force send ATECC to idle mode, so watchdog won't be triggered
+    // in the middle of command execution.
+    // This may happen because of I/O in fread slow enough,
+    // it adds delay between ATECC init sequence in main() and this operation.
+    status = atcab_idle();
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
+        return 2;
     }
 
     /* read data from ATECC */
