@@ -1,3 +1,9 @@
+atecc-util (0.4.8) stable; urgency=medium
+
+  * print cryptoauthlib version in version info
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 19 Jul 2022 19:09:05 +0300
+
 atecc-util (0.4.7) stable; urgency=medium
 
   * cryptoauthlib: handle 'Watchdog About to Expire' state properly
