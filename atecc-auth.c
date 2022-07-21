@@ -243,6 +243,16 @@ int do_atecc_auth_check_gendig(int argc, char **argv)
     uint8_t resp[32];
     uint8_t challenge[32];
 
+    // Force send ATECC to idle mode, so watchdog won't be triggered
+    // in the middle of command execution.
+    // This may happen because of I/O in fread slow enough,
+    // it adds delay between ATECC init sequence in main() and this operation.
+    status = atcab_idle();
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
+        return 2;
+    }
+
     do {
         if ((status = atcab_random(challenge)) != ATCA_SUCCESS)
         {

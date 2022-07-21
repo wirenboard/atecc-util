@@ -61,6 +61,16 @@ int do_atecc_hmac_write_key(int argc, char **argv)
     maybe_fclose(keyfile);
 
     ATCA_STATUS status;
+    // Force send ATECC to idle mode, so watchdog won't be triggered
+    // in the middle of command execution.
+    // This may happen because of I/O in fread slow enough,
+    // it adds delay between ATECC init sequence in main() and this operation.
+    status = atcab_idle();
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
+        return 2;
+    }
+
     const char *cmd;
     if (!writekeyfilename) {
         cmd = "atcab_write_zone";

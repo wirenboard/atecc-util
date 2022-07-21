@@ -125,6 +125,16 @@ int do_atecc_write_private(int argc, char **argv)
     memset(privatekey_payload, 0x00, 4);
     memcpy(privatekey_payload + 4, privatekey, sizeof(privatekey));
 
+    // Force send ATECC to idle mode, so watchdog won't be triggered
+    // in the middle of command execution.
+    // This may happen because of I/O in fread slow enough,
+    // it adds delay between ATECC init sequence in main() and this operation.
+    status = atcab_idle();
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
+        return 2;
+    }
+
     ATECC_RETRY(status, atcab_priv_write(key_id, privatekey_payload, writekey_id, writekey));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_priv_write is failed with status 0x%x\n", status);
@@ -342,6 +352,16 @@ int do_atecc_verify(int argc, char **argv)
     }
 
     maybe_fclose(signaturefile);
+
+    // Force send ATECC to idle mode, so watchdog won't be triggered
+    // in the middle of command execution.
+    // This may happen because of I/O in fread slow enough,
+    // it adds delay between ATECC init sequence in main() and this operation.
+    status = atcab_idle();
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
+        return 2;
+    }
 
     if (!pubkeyfilename) {
         ATECC_RETRY(status, atcab_verify_stored(digest, signature, slot_id, &verified));

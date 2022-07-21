@@ -35,6 +35,16 @@ int do_atecc_ecdh(int argc, char **argv)
 
     maybe_fclose(pubkeyfile);
 
+    // Force send ATECC to idle mode, so watchdog won't be triggered
+    // in the middle of command execution.
+    // This may happen because of I/O in fread slow enough,
+    // it adds delay between ATECC init sequence in main() and this operation.
+    status = atcab_idle();
+    if (status != ATCA_SUCCESS) {
+        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
+        return 2;
+    }
+
     ATECC_RETRY(status, atcab_ecdh(slot_id, pubkey, pms));
     if (status != ATCA_SUCCESS) {
         eprintf("Command atcab_ecdh is failed with status 0x%x\n", status);
