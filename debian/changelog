@@ -1,11 +1,17 @@
-atecc-util (0.4.8) stable; urgency=medium
+atecc-util (0.4.9) stable; urgency=medium
 
   * always send ATECC to idle mode before access
     This fix is an extension of previous one for cases when
     watchdog actually expires during long atecc-util operation
     without a warning.
 
- -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 19 Jul 2022 22:00:16 +0300
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Thu, 21 Jul 2022 16:12:39 +0300
+
+atecc-util (0.4.8) stable; urgency=medium
+
+  * print cryptoauthlib version in version info
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 19 Jul 2022 19:09:05 +0300
 
 atecc-util (0.4.7) stable; urgency=medium
 

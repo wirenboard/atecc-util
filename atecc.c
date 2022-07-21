@@ -26,6 +26,10 @@
 #define VERSION "(unknown version)"
 #endif
 
+#ifndef LIBCRYPTOAUTH_VERSION
+#define LIBCRYPTOAUTH_VERSION "(unknown version)"
+#endif
+
 #ifdef USE_OPENSSL
 #define WITH_OPENSSL ", with OpenSSL"
 #else
@@ -87,6 +91,7 @@ void print_available_cmds(void)
 void print_version(void)
 {
     eprintf("atecc-util " VERSION WITH_OPENSSL ", build " __DATE__ " " __TIME__ "\n");
+    eprintf("cryptoauthlib " LIBCRYPTOAUTH_VERSION "\n");
 }
 
 int print_help(const char *argv0, const char *cmd_name)

@@ -66,6 +66,10 @@ GIT_VERSION:=$(shell git describe --abbrev=6 --dirty --always --tags)
 DEB_VERSION := $(shell head -n 1 debian/changelog  | grep -oh -P "\(\K.*(?=\))")
 CFLAGS+=-DVERSION=\"$(DEB_VERSION)\ \($(GIT_VERSION)\)\"
 
+# add cryptoauthlib version info from Git
+LIBCRYPTOAUTH_VERSION=$(shell git -C $(CRYPTOAUTHDIR) describe --abbrev=6 --dirty --always --tags)
+CFLAGS+=-DLIBCRYPTOAUTH_VERSION=\"$(LIBCRYPTOAUTH_VERSION)\"
+
 all: $(TARGET)
 
 
