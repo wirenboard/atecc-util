@@ -202,9 +202,7 @@ int do_atecc_write_config(int argc, char **argv)
     // it adds delay between ATECC init sequence in main() and this operation.
     status = atcab_idle();
     if (status != ATCA_SUCCESS) {
-        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
-        ret = 2;
-        goto _wcexit;
+        eprintf("Command atcab_idle is failed with status 0x%x, but let's continue\n", status);
     }
 
     bool is_locked;

@@ -131,8 +131,7 @@ int do_atecc_write_private(int argc, char **argv)
     // it adds delay between ATECC init sequence in main() and this operation.
     status = atcab_idle();
     if (status != ATCA_SUCCESS) {
-        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
-        return 2;
+        eprintf("Command atcab_idle is failed with status 0x%x, but let's continue\n", status);
     }
 
     ATECC_RETRY(status, atcab_priv_write(key_id, privatekey_payload, writekey_id, writekey));
@@ -359,8 +358,7 @@ int do_atecc_verify(int argc, char **argv)
     // it adds delay between ATECC init sequence in main() and this operation.
     status = atcab_idle();
     if (status != ATCA_SUCCESS) {
-        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
-        return 2;
+        eprintf("Command atcab_idle is failed with status 0x%x, but let's continue\n", status);
     }
 
     if (!pubkeyfilename) {
