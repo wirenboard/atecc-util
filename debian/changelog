@@ -1,7 +1,7 @@
 atecc-util (0.4.10) stable; urgency=medium
 
   * don't exit if atcab_idle failed (it may mean that
-    device watchdog has switched it already)
+    device watchdog has switched it to idle mode already)
 
  -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Thu, 22 Dec 2022 13:54:08 +0600
 
