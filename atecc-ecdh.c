@@ -41,8 +41,7 @@ int do_atecc_ecdh(int argc, char **argv)
     // it adds delay between ATECC init sequence in main() and this operation.
     status = atcab_idle();
     if (status != ATCA_SUCCESS) {
-        eprintf("Command atcab_idle is failed with status 0x%x\n", status);
-        return 2;
+        eprintf("Command atcab_idle is failed with status 0x%x, but let's continue\n", status);
     }
 
     ATECC_RETRY(status, atcab_ecdh(slot_id, pubkey, pms));
