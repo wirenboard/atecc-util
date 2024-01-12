@@ -4,6 +4,7 @@ Section: misc
 Priority: optional
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 9)
+Homepage: https://github.com/wirenboard/atecc-util
 
 Package: atecc-util
 Architecture: any
