@@ -1,5 +1,5 @@
 Source: atecc-util
-Maintainer: Nikita Maslov <n.maslov@contactless.ru>
+Maintainer: Wiren Board team <info@wirenboard.com>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.2
@@ -10,3 +10,4 @@ Package: atecc-util
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: ATECC508A/608A configuration utility based on cryptoauthlib
+ Linux command-line tool for ATECC608A and ATECC508A ICs connected via i2c.
