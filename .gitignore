@@ -5,4 +5,3 @@ atecc
 *.bin
 debian/.debhelper/
 debian/atecc-utils/
-debian/
