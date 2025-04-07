@@ -2,8 +2,8 @@ Source: atecc-util
 Maintainer: Wiren Board team <info@wirenboard.com>
 Section: misc
 Priority: optional
-Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 9)
+Standards-Version: 4.5.1
+Build-Depends: debhelper-compat (= 13)
 Homepage: https://github.com/wirenboard/atecc-util
 
 Package: atecc-util
