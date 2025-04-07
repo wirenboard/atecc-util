@@ -1,3 +1,9 @@
+atecc-util (0.5.0) stable; urgency=medium
+
+  * Port for Debian 13
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 02 Jun 2026 16:20:00 +0400
+
 atecc-util (0.4.13) stable; urgency=medium
 
   * Fix dump-config output
