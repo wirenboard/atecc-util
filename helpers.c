@@ -29,13 +29,28 @@ int maybe_set_stdout(const char *filename)
         return STDOUT_FILENO;
     } else {
         int new_stdout = open(filename, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-        int saved_stdout;
         if (new_stdout < 0) {
             return -1;
         }
 
-        saved_stdout = dup(STDOUT_FILENO);
-        dup2(new_stdout, STDOUT_FILENO);
+        if (fflush(stdout) != 0) {
+            close(new_stdout);
+            return -1;
+        }
+
+        int saved_stdout = dup(STDOUT_FILENO);
+        if (saved_stdout < 0) {
+            close(new_stdout);
+            return -1;
+        }
+
+        if (dup2(new_stdout, STDOUT_FILENO) < 0) {
+            close(new_stdout);
+            close(saved_stdout);
+            return -1;
+        }
+
+        close(new_stdout);
         return saved_stdout;
     }
 }
