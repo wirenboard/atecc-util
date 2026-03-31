@@ -28,7 +28,7 @@ int maybe_set_stdout(const char *filename)
     if (strcmp(filename, "-") == 0) {
         return STDOUT_FILENO;
     } else {
-        int new_stdout = open(filename, O_WRONLY | O_TRUNC);
+        int new_stdout = open(filename, O_WRONLY | O_TRUNC | O_CREAT, 0644);
         int saved_stdout;
         if (new_stdout < 0) {
             return -1;

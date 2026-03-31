@@ -106,6 +106,7 @@ int do_atecc_dump_config(int argc, char **argv)
         return 1;
     }
     dump_config(config_zone);
+    fflush(stdout);
     maybe_restore_stdout(saved_stdout);
 
     return 0;
