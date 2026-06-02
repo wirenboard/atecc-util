@@ -42,8 +42,7 @@ static int make_key_from_password(const char *password, uint8_t key[ATCA_KEY_SIZ
 {
     uint8_t buffer[MAX_PASSWD_LEN + sizeof (PASSWD_SALT) + 2];
 
-    strcpy((char *) buffer, password);
-    strcpy((char *) buffer + strlen(password), PASSWD_SALT);
+    snprintf((char *) buffer, sizeof(buffer), "%s%s", password, PASSWD_SALT);
 
     if (atcac_sw_sha2_256((const uint8_t *) buffer, strlen((char *) buffer), key) != 0) {
         return 0;
