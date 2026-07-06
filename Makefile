@@ -10,7 +10,7 @@ ifdef DEB_HOST_GNU_TYPE
 CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)-
 endif
 
-LDFLAGS=
+LDFLAGS=-lpthread
 OPTIONS := ATCAPRINTF
 
 CRYPTOAUTHDIR := cryptoauthlib
@@ -35,6 +35,8 @@ LIBCRYPTOAUTH_OBJECTS += $(CRYPTOAUTHDIR)/lib/hal/atca_hal.c
 # General Linux Support
 HAL_PREFIX := hal_linux
 LIBCRYPTOAUTH_OBJECTS += $(CRYPTOAUTHDIR)/lib/hal/hal_linux_timer.c
+# Shared-memory session mutex (hal_os_*): cross-process chip serialization.
+LIBCRYPTOAUTH_OBJECTS += $(CRYPTOAUTHDIR)/lib/hal/hal_linux_os.c
 
 # Native I2C hardware/driver
 OPTIONS += ATCA_HAL_I2C
