@@ -10,7 +10,7 @@ ifdef DEB_HOST_GNU_TYPE
 CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)-
 endif
 
-LDFLAGS=-lpthread
+LDFLAGS+=-lpthread
 OPTIONS := ATCAPRINTF
 
 CRYPTOAUTHDIR := cryptoauthlib

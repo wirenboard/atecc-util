@@ -5,9 +5,6 @@
 #include <getopt.h>
 #include <assert.h>
 #include <wordexp.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/file.h>
 
 #include "basic/atca_basic.h"
 #include "hal/atca_hal.h"
@@ -251,7 +248,8 @@ int main(int argc, char *argv[])
     ATECC_RETRY(ret, atcab_info(revision));
     if(ret != ATCA_SUCCESS) {
         eprintf("Command atcab_info is failed with status %x\n", ret);
-        return 2;
+        ret = 2;
+        goto _exit;
     }
 
     ATCADeviceType dt = atcab_device_type(revision);
