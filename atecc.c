@@ -7,6 +7,7 @@
 #include <wordexp.h>
 
 #include "basic/atca_basic.h"
+#include "hal/atca_hal.h"
 #include "atecc_config_zone.h"
 
 #include "config.h"
@@ -37,6 +38,55 @@
 #endif
 
 #define DEFAULT_RETRIES 10
+
+/* Cross-stack ATECC session lock: a shared-memory robust mutex provided by
+ * cryptoauthlib (hal_os_*), held for the whole run. Every chip user that
+ * links cryptoauthlib - such as the OpenSSL engine - takes this same named
+ * mutex, so they exclude each other on the bus. The name is a frozen
+ * cross-process protocol constant, defined once in cryptoauthlib's
+ * atca_hal.h; do not change it. A chip user that cannot join this mutex
+ * runs unlocked instead - the EOWNERDEAD recovery below plus the exit park
+ * keep a collision from wedging anyone. */
+#define ATECC_SESSION_LOCK_NAME ATCA_HAL_SHARED_MUTEX_NAME
+
+static void *session_lock_handle = NULL;
+static int session_lock_recovered = 0;
+
+static void atecc_session_lock(void)
+{
+    ATCA_STATUS status;
+
+    if (hal_os_create_mutex(&session_lock_handle, ATECC_SESSION_LOCK_NAME) != ATCA_SUCCESS) {
+        /* Could not create/open the shared region (unusual /dev/shm layout):
+         * a diagnostic tool must stay usable, so proceed unserialized. */
+        session_lock_handle = NULL;
+        eprintf("warning: could not take the ATECC session lock, proceeding without it\n");
+        return;
+    }
+
+    status = hal_os_lock_mutex(session_lock_handle);
+    if (ATCA_FUNC_FAIL == status) {
+        /* EOWNERDEAD: the previous holder died mid-session, so the chip may
+         * be left in a latched fault state. We hold the lock now; cure the
+         * chip once the interface is up (see session_lock_recovered). */
+        session_lock_recovered = 1;
+    } else if (ATCA_SUCCESS != status) {
+        /* Locking failed outright: drop the handle and proceed unserialized
+         * rather than fail the tool. */
+        eprintf("warning: could not take the ATECC session lock, proceeding without it\n");
+        (void)hal_os_destroy_mutex(session_lock_handle);
+        session_lock_handle = NULL;
+    }
+}
+
+static void atecc_session_unlock(void)
+{
+    if (session_lock_handle != NULL) {
+        (void)hal_os_unlock_mutex(session_lock_handle);
+        (void)hal_os_destroy_mutex(session_lock_handle);
+        session_lock_handle = NULL;
+    }
+}
 
 struct atecc_cmd {
     const char *name;
@@ -177,9 +227,20 @@ int main(int argc, char *argv[])
     }
 
     retry_counter_reset(num_retries);
+    atecc_session_lock();
     /* init ATECC first */
     if (atecc_init(&cfg) != ATCA_SUCCESS) {
+        atecc_session_unlock();
         exit(2);
+    }
+
+    if (session_lock_recovered) {
+        /* The previous lock owner died mid-session: cure the chip with a
+         * best-effort wake+sleep before use, so this run does not ride an
+         * abandoned (possibly latched) chip state. */
+        (void)atcab_wakeup();
+        (void)atcab_sleep();
+        session_lock_recovered = 0;
     }
 
     uint8_t revision[4];
@@ -187,7 +248,8 @@ int main(int argc, char *argv[])
     ATECC_RETRY(ret, atcab_info(revision));
     if(ret != ATCA_SUCCESS) {
         eprintf("Command atcab_info is failed with status %x\n", ret);
-        return 2;
+        ret = 2;
+        goto _exit;
     }
 
     ATCADeviceType dt = atcab_device_type(revision);
@@ -237,7 +299,14 @@ int main(int argc, char *argv[])
     }
 
 _exit:
+    /* Park the chip with a real Sleep before leaving: idle (the library
+     * default after every command) preserves latched fault states (RNG
+     * health-test 0x08, corrupted idle) indefinitely, a Sleep wipes them.
+     * Best-effort by design. */
+    (void)atcab_wakeup();
+    (void)atcab_sleep();
     atcab_release();
+    atecc_session_unlock();
 
     return ret;
 }

@@ -1,3 +1,11 @@
+atecc-util (0.6.0) stable; urgency=medium
+
+  * Take the cross-stack chip lock for the whole run to serialize access
+    with other cryptoauthlib users (such as the OpenSSL engine), and park
+    the chip with a real Sleep on exit to wipe any latched fault state
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 08 Jul 2026 00:00:00 +0500
+
 atecc-util (0.5.0) stable; urgency=medium
 
   * Port for Debian 13
