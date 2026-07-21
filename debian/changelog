@@ -1,3 +1,9 @@
+atecc-util (0.4.13-wb101) stable; urgency=medium
+
+  * Rebuild for bullseye
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 21 Jul 2026 17:53:00 +0400
+
 atecc-util (0.4.13-wb100) stable; urgency=medium
 
   * Take the cross-stack chip lock for the whole run to serialize access
