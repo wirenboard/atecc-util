@@ -1,3 +1,11 @@
+atecc-util (0.6.1) stable; urgency=medium
+
+  * Switch the license to The WB License (MIT-WB): Wiren Board
+    as the copyright holder, 2018 as the first publication year, use restricted to Wiren Board equipment
+  * Fill debian/copyright in the DEP-5 format
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 12 Nov 2026 15:46:43 +0300
+
 atecc-util (0.6.0) stable; urgency=medium
 
   * Take the cross-stack chip lock for the whole run to serialize access
